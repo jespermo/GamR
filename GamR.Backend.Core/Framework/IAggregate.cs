@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace GamR.Backend.Core.Framework
 {
@@ -6,5 +7,8 @@ namespace GamR.Backend.Core.Framework
     {
         Guid Id { get; }
         long Version { get; }
+        void Hydrate<TEvent>(IEnumerable<TEvent> events) where TEvent : IEvent;
+        IEnumerable<Event> UncommittedChanges();
+        void MarkUncommittedChangesAsCommitted();
     }
 }

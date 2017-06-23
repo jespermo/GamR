@@ -31,18 +31,18 @@ namespace GamR.Backend.Core.Framework.Impl
             _eventPublisher = eventPublisher;
         }
 
-        public async Task Save(Guid aggregateId, IEnumerable<Event> events, int expectedVersion)
+        public async Task Save<TEvent>(Guid aggregateId, IEnumerable<TEvent> events, long expectedVersion) where TEvent : IEvent
         {
             if (!_internalStore.TryGetValue(aggregateId, out LinkedList<EventDescriptor> existingEvents))
             {
                 existingEvents = new LinkedList<EventDescriptor>();
                 _internalStore.Add(aggregateId, existingEvents);
             }
-
-            var currentVersion = existingEvents.Last.Value.Version;
+            
+            var currentVersion = existingEvents?.Last?.Value?.Version ?? 0;
 
             if (currentVersion != expectedVersion)
-                throw CreateConcurrencyException(aggregateId, events, expectedVersion, currentVersion);
+                throw CreateConcurrencyException(aggregateId, events.Cast<IEvent>(), expectedVersion, currentVersion);
 
             foreach (var @event in events)
             {
@@ -63,7 +63,7 @@ namespace GamR.Backend.Core.Framework.Impl
             return Task.FromResult(eventDescriptors.Select(desc => desc.Data).ToImmutableList().AsEnumerable());
         }
 
-        private ConcurrencyException CreateConcurrencyException(Guid aggregateId, IEnumerable<IEvent> events, int expectedVersion, int currentVersion)
+        private ConcurrencyException CreateConcurrencyException(Guid aggregateId, IEnumerable<IEvent> events, long expectedVersion, long currentVersion)
         {
             return new ConcurrencyException(@"Could not save events, expected version {0}, but found {1} on aggregate {2}
 Events (top 10):", expectedVersion, currentVersion, aggregateId, string.Join(Environment.NewLine, events.Select(e => $"{e.GetType().FullName}")));

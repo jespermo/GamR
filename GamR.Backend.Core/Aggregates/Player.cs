@@ -10,15 +10,19 @@ namespace GamR.Backend.Core.Aggregates
         private Guid _id;
         public string Name { get; private set; }
         
-        private void Apply(PlayerCreated @event)
+        public void Apply(PlayerCreated @event)
         {
             _id = @event.Id;
             Name = @event.Name;
         }
 
-        public Player(Guid id, string name)
+        private Player() { }
+
+        public static Player Create(Guid id, string name)
         {
-            Apply(new PlayerCreated(id, name));
+            var player = new Player();
+            player.Apply2(new PlayerCreated(id, name));
+            return player;
         }
     }
 }

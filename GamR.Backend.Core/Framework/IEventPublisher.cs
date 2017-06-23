@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GamR.Backend.Core.Framework.Impl;
 
 namespace GamR.Backend.Core.Framework
 {
@@ -10,6 +11,6 @@ namespace GamR.Backend.Core.Framework
 
     public interface IEventSubscriber
     {
-        Task Subscribe<T>(Func<T, Task> handler) where T : IEvent;
+        Task Subscribe<T>(ISubscribeToEvent<T> handler) where T : IEvent;
     }
 }

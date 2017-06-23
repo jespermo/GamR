@@ -13,10 +13,14 @@ namespace GamR.Backend.Core.Aggregates
         private Guid _id;
         private List<Guid> _players;
 
-        public Game(Guid id, IEnumerable<Guid> playerIds)
+        public static Game StartNewGame(Guid id, IEnumerable<Guid> playerIds)
         {
-            Apply(new GameStarted(id, playerIds));
+            var game = new Game();
+            game.Apply(new GameStarted(id, playerIds));
+            return game;
         }
+
+        private Game() { }
 
         private void Apply(GameStarted @event)
         {

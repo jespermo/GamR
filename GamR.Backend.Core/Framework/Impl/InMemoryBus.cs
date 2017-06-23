@@ -5,33 +5,39 @@ using System.Threading.Tasks;
 
 namespace GamR.Backend.Core.Framework.Impl
 {
+
+    public interface ISubscribeToEvent<T> where T : IEvent
+    {
+        Task Handle(T args);
+    }
+    
+
     public class InMemoryBus : IEventSubscriber, IEventPublisher
     {
-        // adddd find noget bedre end List<object> 
-        readonly Dictionary<Type, List<object>>_subscribers = new Dictionary<Type, List<object>>();
+        readonly Dictionary<Type, List<dynamic>>_subscribers = new Dictionary<Type, List<dynamic>>();
 
-        public Task Subscribe<T>(Func<T, Task> handler) where T: IEvent
+        public Task Subscribe<T>(ISubscribeToEvent<T> subscriber) where T: IEvent
         {
             var eventType = typeof(T);
             if (!_subscribers.TryGetValue(eventType, out var existingSubscribers))
             {
-                existingSubscribers = new List<object>();
+                existingSubscribers = new List<dynamic>();
                 _subscribers.Add(eventType, existingSubscribers);
             }
-            existingSubscribers.Add(handler);
+            existingSubscribers.Add(subscriber);
             return Task.CompletedTask;
 
         }
 
         public async Task Publish<T>(T @event) where T: IEvent
         {
-            var eventType = typeof(T);
+            var eventType = @event.GetType();
             if (_subscribers.TryGetValue(eventType, out var subscribers))
             {
-                //                                              :-)
-                foreach (var subscriber in subscribers.Cast<Func<T, Task>>())
+                //                                      :-)
+                foreach (dynamic subscriber in subscribers)
                 {
-                    await subscriber(@event);
+                    await subscriber.Handle((dynamic)@event);
                 }
             }
         }
