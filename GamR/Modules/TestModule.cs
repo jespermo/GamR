@@ -8,8 +8,9 @@ namespace GamR.Modules
 {
     public class TestModule : NancyModule
     {
-        public TestModule()
+        public TestModule(Startup.ITest test)
         {
+            var testet = test;
             Get("/", args => "Hej dut");
         }
     }

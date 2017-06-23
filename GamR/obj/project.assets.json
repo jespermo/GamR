@@ -15,6 +15,20 @@
           "lib/netstandard1.1/Autofac.dll": {}
         }
       },
+      "Autofac.Extensions.DependencyInjection/4.1.0": {
+        "type": "package",
+        "dependencies": {
+          "Autofac": "4.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
+          "NETStandard.Library": "1.6.0"
+        },
+        "compile": {
+          "lib/netstandard1.1/Autofac.Extensions.DependencyInjection.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.1/Autofac.Extensions.DependencyInjection.dll": {}
+        }
+      },
       "Libuv/1.9.1": {
         "type": "package",
         "dependencies": {
@@ -1592,6 +1606,19 @@
         },
         "runtime": {
           "lib/netstandard1.6/Nancy.dll": {}
+        }
+      },
+      "Nancy.Bootstrappers.Autofac/2.0.0-clinteastwood": {
+        "type": "package",
+        "dependencies": {
+          "Autofac": "4.0.0-rc3-316",
+          "Nancy": "2.0.0-clinteastwood"
+        },
+        "compile": {
+          "lib/netstandard1.6/Nancy.Bootstrappers.Autofac.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.6/Nancy.Bootstrappers.Autofac.dll": {}
         }
       },
       "NETStandard.Library/1.6.1": {
@@ -3805,6 +3832,17 @@
         "lib/netstandard1.1/Autofac.xml"
       ]
     },
+    "Autofac.Extensions.DependencyInjection/4.1.0": {
+      "sha512": "Gp94QkDxBLHaP8RnUWvtpIgOTVfIbw/wtxoV0YscI6iADQCFWn57jLYDuJnTSuZ75a6+MIXFEP2jbbTOnU01GQ==",
+      "type": "package",
+      "path": "autofac.extensions.dependencyinjection/4.1.0",
+      "files": [
+        "autofac.extensions.dependencyinjection.4.1.0.nupkg.sha512",
+        "autofac.extensions.dependencyinjection.nuspec",
+        "lib/netstandard1.1/Autofac.Extensions.DependencyInjection.dll",
+        "lib/netstandard1.1/Autofac.Extensions.DependencyInjection.xml"
+      ]
+    },
     "Libuv/1.9.1": {
       "sha512": "oD+bG4iQmy116CSUB7RL0YoNpQ+PEEvZXkBNDknedsikDPYZosvdWUp8T7fBYVWayoZyE8LVDrhOhDIiYBCDwg==",
       "type": "package",
@@ -5143,6 +5181,17 @@
         "lib/netstandard1.6/Nancy.xml",
         "nancy.2.0.0-clinteastwood.nupkg.sha512",
         "nancy.nuspec"
+      ]
+    },
+    "Nancy.Bootstrappers.Autofac/2.0.0-clinteastwood": {
+      "sha512": "MPl9uGrgIzMfnHSwp5/9P52mYbMhgMM0Rk+sF+gTtySoNN7k+Rz2dnFlXKfJA5mJmavhBrh4vwmc33Ctun0OfA==",
+      "type": "package",
+      "path": "nancy.bootstrappers.autofac/2.0.0-clinteastwood",
+      "files": [
+        "lib/net452/Nancy.Bootstrappers.Autofac.dll",
+        "lib/netstandard1.6/Nancy.Bootstrappers.Autofac.dll",
+        "nancy.bootstrappers.autofac.2.0.0-clinteastwood.nupkg.sha512",
+        "nancy.bootstrappers.autofac.nuspec"
       ]
     },
     "NETStandard.Library/1.6.1": {
@@ -10028,6 +10077,7 @@
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v1.1": [
       "Autofac >= 4.6.0",
+      "Autofac.Extensions.DependencyInjection >= 4.1.0",
       "Microsoft.ApplicationInsights.AspNetCore >= 2.0.0",
       "Microsoft.AspNetCore >= 1.1.2",
       "Microsoft.AspNetCore.Mvc >= 1.1.3",
@@ -10036,7 +10086,8 @@
       "Microsoft.Extensions.Logging.Debug >= 1.1.2",
       "Microsoft.NETCore.App >= 1.1.2",
       "Microsoft.VisualStudio.Web.BrowserLink >= 1.1.2",
-      "Nancy >= 2.0.0-clinteastwood"
+      "Nancy >= 2.0.0-clinteastwood",
+      "Nancy.Bootstrappers.Autofac >= 2.0.0-clinteastwood"
     ]
   },
   "packageFolders": {
@@ -10069,6 +10120,14 @@
           "Microsoft.Extensions.Logging.Debug": {
             "target": "Package",
             "version": "1.1.2"
+          },
+          "Autofac.Extensions.DependencyInjection": {
+            "target": "Package",
+            "version": "4.1.0"
+          },
+          "Nancy.Bootstrappers.Autofac": {
+            "target": "Package",
+            "version": "2.0.0-clinteastwood"
           },
           "Nancy": {
             "target": "Package",
