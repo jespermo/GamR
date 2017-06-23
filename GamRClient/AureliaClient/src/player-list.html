@@ -1,0 +1,12 @@
+<template>
+  <div class="player-list">
+    <ul class="list-group">
+      <li repeat.for="player of players" class="list-group-item ${player.id === $parent.selectedId ? 'active' : ''}">
+        <a route-href="route: players; params.bind: {id:player.id}" click.delegate="$parent.select(player)">
+          <h4 class="list-group-item-heading">${player.firstName} ${player.lastName}</h4>
+          <p class="list-group-item-text">${player.email}</p>
+        </a>
+      </li>
+    </ul>
+  </div>
+</template>

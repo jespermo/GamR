@@ -10,6 +10,8 @@ using Microsoft.DotNet.PlatformAbstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Nancy;
+using Nancy.Bootstrapper;
 using Nancy.Bootstrappers.Autofac;
 using Nancy.Owin;
 
@@ -88,6 +90,17 @@ namespace GamR
         {
             existingContainer.Update(x => x.RegisterInstance<Startup.ITest>(new Startup.Test {TestValue = 14}));
             base.ConfigureApplicationContainer(existingContainer);
+        }
+
+        protected override void RequestStartup(ILifetimeScope container, IPipelines pipelines, NancyContext context)
+        {
+            pipelines.AfterRequest.AddItemToEndOfPipeline(ctx =>
+            {
+                ctx.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                ctx.Response.Headers.Add("Access-Control-Allow-Methods", "POST,GET,DELETE,PUT,OPTIONS");
+                ctx.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+            });
+            base.RequestStartup(container, pipelines, context);
         }
     }
 
