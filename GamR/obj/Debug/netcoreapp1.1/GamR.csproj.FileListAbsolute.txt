@@ -1,9 +1,0 @@
-C:\Users\jmo\code\git\GamR\GamR\bin\Debug\netcoreapp1.1\GamR.deps.json
-C:\Users\jmo\code\git\GamR\GamR\bin\Debug\netcoreapp1.1\GamR.runtimeconfig.json
-C:\Users\jmo\code\git\GamR\GamR\bin\Debug\netcoreapp1.1\GamR.runtimeconfig.dev.json
-C:\Users\jmo\code\git\GamR\GamR\bin\Debug\netcoreapp1.1\GamR.dll
-C:\Users\jmo\code\git\GamR\GamR\bin\Debug\netcoreapp1.1\GamR.pdb
-C:\Users\jmo\code\git\GamR\GamR\obj\Debug\netcoreapp1.1\GamR.csprojResolveAssemblyReference.cache
-C:\Users\jmo\code\git\GamR\GamR\obj\Debug\netcoreapp1.1\GamR.AssemblyInfo.cs
-C:\Users\jmo\code\git\GamR\GamR\obj\Debug\netcoreapp1.1\GamR.dll
-C:\Users\jmo\code\git\GamR\GamR\obj\Debug\netcoreapp1.1\GamR.pdb
