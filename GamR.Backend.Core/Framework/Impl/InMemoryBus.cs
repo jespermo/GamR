@@ -1,37 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace GamR.Backend.Core.Framework.Impl
 {
     public class InMemoryBus : IEventSubscriber, IEventPublisher
     {
-        // adddd find noget bedre end List<object> 
-        readonly Dictionary<Type, List<object>>_subscribers = new Dictionary<Type, List<object>>();
+        private class SubscriberInfo
+        {
+            public object Context { get; }
+            public MethodInfo MethodInfo { get; }
 
-        public Task Subscribe<T>(Func<T, Task> handler) where T: IEvent
+            public SubscriberInfo(object context, MethodInfo methodInfo)
+            {
+                Context = context;
+                MethodInfo = methodInfo;
+            }
+        }
+
+        readonly Dictionary<Type, List<SubscriberInfo>> _subscribers = new Dictionary<Type, List<SubscriberInfo>>();
+        private static readonly string HandleMethodName = nameof(ISubscribeToEvent<IEvent>.Handle);
+
+        public Task Subscribe<T>(ISubscribeToEvent<T> subscriber) where T : IEvent
         {
             var eventType = typeof(T);
             if (!_subscribers.TryGetValue(eventType, out var existingSubscribers))
             {
-                existingSubscribers = new List<object>();
+                existingSubscribers = new List<SubscriberInfo>();
                 _subscribers.Add(eventType, existingSubscribers);
             }
-            existingSubscribers.Add(handler);
+            
+            existingSubscribers.Add(new SubscriberInfo(subscriber, subscriber.GetType().GetMethod(HandleMethodName, new[] { typeof(T) })));
             return Task.CompletedTask;
 
         }
 
-        public async Task Publish<T>(T @event) where T: IEvent
+        public async Task Publish<T>(T @event) where T : IEvent
         {
-            var eventType = typeof(T);
+            var eventType = @event.GetType();
             if (_subscribers.TryGetValue(eventType, out var subscribers))
             {
-                //                                              :-)
-                foreach (var subscriber in subscribers.Cast<Func<T, Task>>())
+                foreach (var subscriberInfo in subscribers)
                 {
-                    await subscriber(@event);
+                    var task = (Task)subscriberInfo.MethodInfo.Invoke(subscriberInfo.Context, new object[] { @event });
+                    await task;
                 }
             }
         }

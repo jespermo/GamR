@@ -1,8 +1,9 @@
 ﻿using System;
+using GamR.Backend.Core.Framework;
 
 namespace GamR.Backend.Core.Events
 {
-    public class PlayerCreated
+    public class PlayerCreated : Event
     {
         public Guid Id { get; }
         public string Name { get; }
@@ -11,6 +12,18 @@ namespace GamR.Backend.Core.Events
         {
             Id = id;
             Name = name;
+        }
+    }
+
+    public class PlayerNameChanged : Event
+    {
+        public Guid Id { get; }
+        public string NewName { get; }
+
+        public PlayerNameChanged(Guid id, string newName)
+        {
+            Id = id;
+            NewName = newName;
         }
     }
 }
