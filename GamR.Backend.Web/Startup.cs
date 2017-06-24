@@ -93,6 +93,7 @@ namespace GamR.Backend.Web
                 ctx.Response.Headers.Add("Access-Control-Allow-Origin", "*");
                 ctx.Response.Headers.Add("Access-Control-Allow-Methods", "POST,GET,DELETE,PUT,OPTIONS");
                 ctx.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+                ctx.Response.Headers.Add("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
             });
             base.RequestStartup(container, pipelines, context);
         }

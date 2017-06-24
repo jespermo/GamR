@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Nancy;
+using Nancy.ModelBinding;
 
 namespace GamR.Backend.Web.Modules
 {
@@ -18,7 +20,7 @@ namespace GamR.Backend.Web.Modules
     public class PlayerModule : NancyModule
     {
 
-        private List<Player> _players;
+        private static List<Player> _players;
 
         public PlayerModule()
         {
@@ -29,12 +31,24 @@ namespace GamR.Backend.Web.Modules
                                 response.Headers.Add("Content-Type","application/json");
                                 return response;
                             });
+            Get("/player/{id}", args =>
+                                {
+                                    return _players.SingleOrDefault(p => p.Id == args.id);
+                                });
+
+            Put("/player", _ =>
+                           {
+                               var request = this.Bind<Player>();
+                               _players.RemoveAll(x => x.Id == request.Id);
+                               _players.Add(request);
+                               return Response.AsJson(request);
+                           });
         }
 
 
         private void CreatePlayers()
         {
-            _players = new List<Player>
+            _players = _players ?? new List<Player>
                        {
                            new Player
                            {
