@@ -22,4 +22,12 @@ export class Api {
         .send()
         .then(resp => JSON.parse(resp.response));
     }
+
+    getContactDetails(id){
+        return this.http.createRequest("/player/" + id)
+        .asGet()
+        .send()
+        .then(resp => JSON.parse(resp.response);
+    }
+  }
 }
