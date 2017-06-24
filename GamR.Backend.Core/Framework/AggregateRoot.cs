@@ -29,7 +29,7 @@ namespace GamR.Backend.Core.Framework
             _uncommitted.Clear();
         }
 
-        public void Apply2<TEvent>(TEvent @event) where TEvent : IEvent
+        public void BaseApply<TEvent>(TEvent @event) where TEvent : IEvent
         {
             Apply(@event, true);
         }

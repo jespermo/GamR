@@ -14,4 +14,16 @@ namespace GamR.Backend.Core.Events
             Name = name;
         }
     }
+
+    public class PlayerNameChanged : Event
+    {
+        public Guid Id { get; }
+        public string NewName { get; }
+
+        public PlayerNameChanged(Guid id, string newName)
+        {
+            Id = id;
+            NewName = newName;
+        }
+    }
 }
