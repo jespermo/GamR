@@ -9,10 +9,12 @@ namespace GamR.Backend.Core.Events
     {
         public Guid Id { get; }
         public IReadOnlyCollection<Guid> Players { get; }
+        public Guid MatchId { get; }
 
-        public GameStarted(Guid id, IEnumerable<Guid> players)
+        public GameStarted(Guid id, Guid matchId, IEnumerable<Guid> players)
         {
             Id = id;
+            MatchId = matchId;
             Players = players.ToList();
         }
         

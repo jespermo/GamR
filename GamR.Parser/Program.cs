@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+using GamR.Backend.Core.Aggregates;
+using GamR.Backend.Core.Framework;
+using GamR.Backend.Core.Framework.Impl;
 
 namespace GamR.Parser
 {
@@ -11,7 +15,49 @@ namespace GamR.Parser
         private static char _separator;
 
         static Dictionary<int, string> rows = new Dictionary<int, string>();
+        private static Repository<Player> _playerRepository;
+        private static Repository<Backend.Core.Aggregates.Match> _matchRepository;
+        private static Repository<Backend.Core.Aggregates.Game> _gameRepository;
+
         static void Main(string[] args)
+        {
+            var match = ParseFile();
+            CreateRepositories();
+            CreateData(match).RunSynchronously();
+        }
+
+        private static void CreateRepositories()
+        {
+            var inMemoryEventStore = new InMemoryEventStore(new InMemoryBus());
+            _playerRepository = new Repository<Player>(inMemoryEventStore);
+            _matchRepository = new Repository<Backend.Core.Aggregates.Match>(inMemoryEventStore);
+            _gameRepository = new Repository<Backend.Core.Aggregates.Game>(inMemoryEventStore);
+        }
+
+        private static async Task CreateData(Match match)
+        {
+            var players = match.Players;
+            var playerAggregateIds = new Dictionary<string,Guid>();
+            foreach (var player in players)
+            {
+               var aggregatePlayer = Player.Create(Guid.NewGuid(), player);
+               await  _playerRepository.Save(aggregatePlayer);
+                playerAggregateIds.Add(aggregatePlayer.Name,aggregatePlayer.Id);
+            }
+            
+            var aggregateMatch = Backend.Core.Aggregates.Match.Create(Guid.NewGuid(), match.Date, match.Location);
+            await _matchRepository.Save(aggregateMatch);
+            foreach (var game in match.Games)
+            {
+                var aggregateGame = Backend.Core.Aggregates.Game.StartNewGame(Guid.NewGuid(), aggregateMatch.Id, playerAggregateIds.Values);
+                await _gameRepository.Save(aggregateGame);
+                var gameMelding = game.Melding;
+                aggregateGame.AddMelding(gameMelding.GameMelding, playerAggregateIds[gameMelding.Melder], gameMelding.NumberOfTricks, gameMelding.NumberOfVips);
+            }
+        }
+
+
+        private static Match ParseFile()
         {
             var currentDir = Directory.GetCurrentDirectory();
             var allLines = File.ReadAllLines($"{currentDir}\\..\\resources\\whist.csv");
@@ -23,7 +69,7 @@ namespace GamR.Parser
             foreach (var line in allLinesSplit)
             {
                 rowNumber++;
-                if (line.All(x => string.IsNullOrWhiteSpace(x) || x=="0")) continue;
+                if (line.All(x => string.IsNullOrWhiteSpace(x) || x == "0")) continue;
                 if (rowNumber == 1) //Date and Location
                 {
                     match.Date = DateTime.Parse(line[1]);
@@ -36,21 +82,19 @@ namespace GamR.Parser
                     match.Players.Add(line[4]);
                     match.Players.Add(line[5]);
                 }
-                if (rowNumber == 4)//Total results
+                if (rowNumber == 4) //Total results
                 {
                     //Wait
                 }
                 if (rowNumber == 5) //Melding headers
                 {
-                    
                 }
-                if (rowNumber >= 7)//Games and meldings
+                if (rowNumber >= 7) //Games and meldings
                 {
-                    AddGame(match,line);
+                    AddGame(match, line);
                 }
-                
             }
-
+            return match;
         }
 
         private static void AddGame(Match match, string[] row)
