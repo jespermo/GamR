@@ -57,7 +57,7 @@ namespace GamR.Backend.Core.Tests
 
             // act
             var aggregate = Player.Create(Guid.NewGuid(), "Ham der jelle");
-            aggregate.Apply(new PlayerNameChanged(aggregate.Id, "ham der jelle changed name"));
+            aggregate.BaseApply(new PlayerNameChanged(aggregate.Id, "ham der jelle changed name"));
             repo.Save(aggregate).Wait();
             repo.Save(Player.Create(Guid.NewGuid(), "Ham der møjeren")).Wait();
 
