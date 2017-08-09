@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Autofac;
 using Autofac.Core;
 using GamR.Backend.Core.Aggregates;
+using GamR.Backend.Core.Events;
 using GamR.Backend.Core.Framework;
 using GamR.Backend.Core.Framework.Impl;
 using Microsoft.AspNetCore.Builder;
@@ -47,17 +49,40 @@ namespace GamR.Backend.Web
         }
     }
 
+    public class PlayersView : ISubscribeToEvent<PlayerCreated>, ISubscribeToEvent<PlayerNameChanged>
+    {
+        private readonly Dictionary<Guid, string> _playerNames = new Dictionary<Guid, string>();
+
+        public async Task Handle(PlayerCreated args)
+        {
+            _playerNames.Add(args.Id, args.Name);
+        }
+
+        public async Task Handle(PlayerNameChanged args)
+        {
+            _playerNames[args.Id] = args.NewName;
+        }
+
+        public IEnumerable<string> Players => _playerNames.Values;
+    }
+
     public class BootStrapper : AutofacNancyBootstrapper
     {
         protected override void ConfigureApplicationContainer(ILifetimeScope existingContainer)
         {
             var eventBus = new InMemoryBus();
 
+            var playersView = new PlayersView();
+
+            eventBus.Subscribe<PlayerCreated>(playersView);
+
+            existingContainer.Update(x => x.RegisterInstance(playersView));
             existingContainer.Update(x => x.RegisterType<CsvEventLoader>().SingleInstance());
             existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventSubscriber>());
             existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventPublisher>());
             existingContainer.Update(x => x.RegisterType<InMemoryEventStore>().As<IEventStore>().SingleInstance());
             existingContainer.Update(x => x.RegisterGeneric(typeof(Repository<>)));
+            
             base.ConfigureApplicationContainer(existingContainer);
         }
 
