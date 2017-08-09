@@ -5,6 +5,7 @@ import {areEqual} from './utility';
 import {PlayerUpdated,PlayerViewed} from './messages';
 
 interface Player {
+  
   firstName: string;
   lastName: string;
   email: string;

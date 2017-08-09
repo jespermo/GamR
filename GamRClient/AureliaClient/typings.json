@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "moment": "registry:npm/moment#2.10.5+20160211003958"
+  },
+  "globalDependencies": {
+    "moment": "registry:dt/moment#2.11.1+20161010105546"
+  }
+}
