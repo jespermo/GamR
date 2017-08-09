@@ -50,6 +50,7 @@ namespace GamR.Backend.Core.Tests
             var bus = new InMemoryBus();
             var eventStore = new InMemoryEventStore(bus);
             var playersView = new PlayersView();
+
             await bus.Subscribe<PlayerCreated>(playersView);
             await bus.Subscribe<PlayerNameChanged>(playersView);
 

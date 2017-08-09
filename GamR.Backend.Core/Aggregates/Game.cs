@@ -4,12 +4,15 @@ using System.Linq;
 using GamR.Backend.Core.Events;
 using GamR.Backend.Core.Framework;
 using GamR.Backend.Core.Framework.Exceptions;
+using GamR.Backend.Core.ValueTypes;
 
 namespace GamR.Backend.Core.Aggregates
 {
     public class Game :  AggregateRoot
     {
         public override Guid Id => _id;
+        public Melding Melding { get; private set; }
+        public Result Result { get; private set; }
         private Guid _id;
 
         public static Game StartNewGame(Guid id, Guid matchId, IEnumerable<Guid> playerIds)
@@ -24,7 +27,7 @@ namespace GamR.Backend.Core.Aggregates
             Players = new List<Guid>();
         }
 
-        public void Apply(GameStarted @event)
+        internal void Apply(GameStarted @event)
         {
             if (@event.Players.Count == 4)
             {
@@ -38,16 +41,33 @@ namespace GamR.Backend.Core.Aggregates
             }
         }
 
+        internal void Apply(Melded @event)
+        {
+            Melding = new Melding(@event.Melding, @event.MeldingPlayerIds, @event.NumberOfTricks, @event.NumberOfVips);
+        }
+
+        internal void Apply(GameEnded @event)
+        {
+            Result = new Result(@event.Player1Score, @event.Player2Score, @event.Player3Score, @event.Player4Score, @event.ActualNumberOfTricks);
+        }
+
+
         public Guid MatchId { get; private set; }
 
         public List<Guid> Players { get; private set; }
 
-        public void AddMelding(string melding, Guid meldingPlayer, int numberOfTricks, string numberOfVips)
+        
+        public void AddMelding(string melding, IEnumerable<Guid> meldingPlayerIds, int numberOfTricks, string numberOfVips)
+        {
+            BaseApply(new Melded(Guid.NewGuid(), Id, melding, meldingPlayerIds, numberOfTricks, numberOfVips));
+        }
+
+        public void EndGame(decimal player1, decimal player2, decimal player3, decimal player4, int actualNumberOfTricks)
         {
             
         }
 
-        public void EndGame()
+        public void Reshuffle(string reason)
         {
             
         }

@@ -52,7 +52,7 @@ namespace GamR.Parser
                 var aggregateGame = Backend.Core.Aggregates.Game.StartNewGame(Guid.NewGuid(), aggregateMatch.Id, playerAggregateIds.Values);
                 var gameMelding = game.Melding;
                 aggregateGame.AddMelding(gameMelding.GameMelding, playerAggregateIds[gameMelding.Melder], gameMelding.NumberOfTricks, gameMelding.NumberOfVips);
-                aggregateGame.EndGame();
+                //aggregateGame.EndGame();
                 await _gameRepository.Save(aggregateGame);
             }
         }

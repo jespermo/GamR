@@ -44,8 +44,7 @@ namespace GamR.Backend.Core.Framework.Impl
             {
                 foreach (var subscriberInfo in subscribers)
                 {
-                    var task = (Task)subscriberInfo.MethodInfo.Invoke(subscriberInfo.Context, new object[] { @event });
-                    await task;
+                    await (Task)subscriberInfo.MethodInfo.Invoke(subscriberInfo.Context, new object[] { @event });
                 }
             }
         }

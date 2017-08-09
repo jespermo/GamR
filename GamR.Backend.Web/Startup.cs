@@ -1,4 +1,10 @@
-﻿using Autofac;
+﻿using System;
+using System.Collections.Generic;
+using Autofac;
+using Autofac.Core;
+using GamR.Backend.Core.Aggregates;
+using GamR.Backend.Core.Framework;
+using GamR.Backend.Core.Framework.Impl;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,7 +26,9 @@ namespace GamR.Backend.Web
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
+
             Configuration = builder.Build();
+            
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -30,51 +38,12 @@ namespace GamR.Backend.Web
         {
            
             //services.AddMvc();
-            
-
         }
-
- 
         
-
-        public interface ITest
-        {
-            int TestValue { get; }
-        }
-        public class Test : ITest
-        {
-            public int TestValue { get; set; }
-        }
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            //OLD:
-            //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            //loggerFactory.AddDebug();
-
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //    app.UseBrowserLink();
-            //}
-            //else
-            //{
-            //    app.UseExceptionHandler("/Home/Error");
-            //}
-
-            //app.UseStaticFiles();
-            //app.UseMvc(routes =>
-            //{
-            //    routes.MapRoute(
-            //        name: "default",
-            //        template: "{controller=Home}/{action=Index}/{id?}");
-            //});
-
-
-            app.UseOwin(x => x.UseNancy()); 
-
-
+            app.UseOwin(x => x.UseNancy());
         }
     }
 
@@ -82,7 +51,13 @@ namespace GamR.Backend.Web
     {
         protected override void ConfigureApplicationContainer(ILifetimeScope existingContainer)
         {
-            existingContainer.Update(x => x.RegisterInstance<Startup.ITest>(new Startup.Test {TestValue = 14}));
+            var eventBus = new InMemoryBus();
+
+            existingContainer.Update(x => x.RegisterType<CsvEventLoader>().SingleInstance());
+            existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventSubscriber>());
+            existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventPublisher>());
+            existingContainer.Update(x => x.RegisterType<InMemoryEventStore>().As<IEventStore>().SingleInstance());
+            existingContainer.Update(x => x.RegisterGeneric(typeof(Repository<>)));
             base.ConfigureApplicationContainer(existingContainer);
         }
 
@@ -96,6 +71,13 @@ namespace GamR.Backend.Web
                 ctx.Response.Headers.Add("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
             });
             base.RequestStartup(container, pipelines, context);
+        }
+
+        protected override void ApplicationStartup(ILifetimeScope container, IPipelines pipelines)
+        {
+            container.Resolve<CsvEventLoader>().LoadEvents("whist.csv").Wait();
+
+            base.ApplicationStartup(container, pipelines);
         }
     }
 
