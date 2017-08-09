@@ -1,6 +1,8 @@
 import {inject} from 'aurelia-framework';
+import {EventAggregator} from 'aurelia-event-aggregator';
 import {Api} from './api';
 import {areEqual} from './utility';
+import {PlayerUpdated,PlayerViewed} from './messages';
 
 interface Player {
   firstName: string;
@@ -8,13 +10,13 @@ interface Player {
   email: string;
 }
 
-@inject(Api)
+@inject(Api,EventAggregator)
 export class PlayerDetail {
   routeConfig;
   player: Player;
   originalPlayer: Player;
 
-  constructor(private api: Api) { }
+  constructor(private api: Api, private ea: EventAggregator) { }
 
   activate(params, routeConfig) {
     this.routeConfig = routeConfig;
@@ -23,6 +25,7 @@ export class PlayerDetail {
       this.player = <Player> player;
       this.routeConfig.navModel.setTitle(this.player.firstName);
       this.originalPlayer = JSON.parse(JSON.stringify(this.player));
+      this.ea.publish(new PlayerViewed(this.player));
     });
   }
 
@@ -35,12 +38,19 @@ export class PlayerDetail {
       this.player = <Player> player;
       this.routeConfig.navModel.setTitle(this.player.firstName);
       this.originalPlayer = JSON.parse(JSON.stringify(this.player));
+      this.ea.publish(new PlayerUpdated(this.player));
     });
   }
 
   canDeactivate() {
-    if (!areEqual(this.originalPlayer, this.player)) {
-      return confirm('You have unsaved changes. Are you sure you wish to leave?');
+    if(!areEqual(this.originalPlayer, this.player)){
+      let result = confirm('You have unsaved changes. Are you sure you wish to leave?');
+
+      if(!result) {
+        this.ea.publish(new PlayerViewed(this.player));
+      }
+
+      return result;
     }
 
     return true;

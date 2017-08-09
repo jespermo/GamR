@@ -32,6 +32,21 @@ export class Api {
         .then(resp => JSON.parse(resp.response));
     }  
 
+    getMatchList(){    
+        return this.http.createRequest("/matches")
+        .asGet()
+        .send()
+        .then(resp => JSON.parse(resp.response));
+    }
+
+
+    getMatchDetails(id){
+        return this.http.createRequest("/match/" + id)
+        .asGet()
+        .send()
+        .then(resp => JSON.parse(resp.response));
+    }  
+
       savePlayer(player){
         return this.http.createRequest("/player/")
         .asPut()
