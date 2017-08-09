@@ -14,19 +14,19 @@ namespace GamR.Backend.Core.Tests
     public class FlowTest
     {
         [TestMethod]
-        public void TestMethod1()
+        public async Task TestMethod1()
         {
             // arrange
             var bus = new InMemoryBus();
             var eventStore = new InMemoryEventStore(bus);
             var simpleCountingPlayersView = new SimpleCountingPlayersView();
-            bus.Subscribe(simpleCountingPlayersView).Wait();
+            await bus.Subscribe(simpleCountingPlayersView);
 
             var repo = new Repository<Player>(eventStore);
 
             // act
-            repo.Save(Player.Create(Guid.NewGuid(), "Ham der jelle")).Wait();
-            repo.Save(Player.Create(Guid.NewGuid(), "Ham der møjeren")).Wait();
+            await repo.Save(Player.Create(Guid.NewGuid(), "Ham der jelle"));
+            await repo.Save(Player.Create(Guid.NewGuid(), "Ham der møjeren"));
 
             // assert
             Assert.AreEqual(2, simpleCountingPlayersView.PlayersCreated);
@@ -44,22 +44,22 @@ namespace GamR.Backend.Core.Tests
         }
 
         [TestMethod]
-        public void MultipleEvents()
+        public async Task MultipleEvents()
         {
             // arrange
             var bus = new InMemoryBus();
             var eventStore = new InMemoryEventStore(bus);
             var playersView = new PlayersView();
-            bus.Subscribe<PlayerCreated>(playersView).Wait();
-            bus.Subscribe<PlayerNameChanged>(playersView).Wait();
+            await bus.Subscribe<PlayerCreated>(playersView);
+            await bus.Subscribe<PlayerNameChanged>(playersView);
 
             var repo = new Repository<Player>(eventStore);
 
             // act
             var aggregate = Player.Create(Guid.NewGuid(), "Ham der jelle");
-            aggregate.BaseApply(new PlayerNameChanged(aggregate.Id, "ham der jelle changed name"));
-            repo.Save(aggregate).Wait();
-            repo.Save(Player.Create(Guid.NewGuid(), "Ham der møjeren")).Wait();
+            aggregate.ChangeName("ham der jelle changed name");
+            await repo.Save(aggregate);
+            await repo.Save(Player.Create(Guid.NewGuid(), "Ham der møjeren"));
 
             // assert
             Assert.AreEqual(2, playersView.Players.Count());

@@ -22,6 +22,11 @@ namespace GamR.Backend.Core.Aggregates
             Name = @event.NewName;
         }
 
+        public void ChangeName(string newName)
+        {
+            BaseApply(new PlayerNameChanged(_id, newName));
+        }
+
         private Player() { }
 
         public static Player Create(Guid id, string name)

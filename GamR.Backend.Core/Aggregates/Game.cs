@@ -44,7 +44,12 @@ namespace GamR.Backend.Core.Aggregates
 
         public void AddMelding(string melding, Guid meldingPlayer, int numberOfTricks, string numberOfVips)
         {
-            throw new NotImplementedException();
+            
+        }
+
+        public void EndGame()
+        {
+            
         }
     }
 }

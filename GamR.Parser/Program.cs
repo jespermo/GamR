@@ -50,9 +50,10 @@ namespace GamR.Parser
             foreach (var game in match.Games)
             {
                 var aggregateGame = Backend.Core.Aggregates.Game.StartNewGame(Guid.NewGuid(), aggregateMatch.Id, playerAggregateIds.Values);
-                await _gameRepository.Save(aggregateGame);
                 var gameMelding = game.Melding;
                 aggregateGame.AddMelding(gameMelding.GameMelding, playerAggregateIds[gameMelding.Melder], gameMelding.NumberOfTricks, gameMelding.NumberOfVips);
+                aggregateGame.EndGame();
+                await _gameRepository.Save(aggregateGame);
             }
         }
 
