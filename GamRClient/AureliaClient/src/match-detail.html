@@ -1,4 +1,6 @@
 <template>
+  <require from="./date-format"></require>
+
   <div class="panel panel-primary">
     <div class="panel-heading">
       <h3 class="panel-title">Match</h3>
@@ -8,7 +10,7 @@
         <div class="form-group">
           <label class="col-sm-2 control-label">Date</label>
           <div class="col-sm-10">
-            <input type="text" placeholder="date" class="form-control" value.bind="match.date">
+            <input type="text" placeholder="date" class="form-control" value.bind="match.date | dateFormat">
           </div>
         </div>
 
@@ -20,10 +22,30 @@
           </div>
         </div>
       </form>
-    </div>
+
+
   </div>
 
-  <div class="button-bar">
-    <button class="btn btn-success" click.delegate="save()" disabled.bind="!canSave">Save</button>
+
+    <div class="button-bar">
+      <button class="btn btn-success" click.delegate="save()" disabled.bind="!canSave">Save</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-heading">
+        <h3 class="panel-title">GAMES</h3>
+        </div>
+       <div class="game-list">
+           <ul class="list-group">
+              <li repeat.for="game of match.games" >
+        
+                <h4 class="list-group-item-heading">${game.meldingPlayer}</h4>
+                <p class="list-group-item-text">${game.melding}</p>
+              </li>
+            </ul>
+      </div>
   </div>
+  </div>
+  
+    </div>
 </template>

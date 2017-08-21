@@ -12,14 +12,16 @@ export class App {
   configureRouter(config: RouterConfiguration, router: Router){
     config.title = 'Whist';
     config.map([
-      { route: '',              moduleId: 'no-selection',  title: 'Select'},
+      { route: '',  moduleId: 'no-selection',  title: 'Select'},
       { route: 'players',  moduleId: 'player-list', name:'players', nav: true, title: "players"},
-      { route: 'matches',  moduleId: 'match-list', name:'matches', nav: true, title: "matches"}
+      { route: 'matches',  moduleId: 'match-list', name:'matches', nav: true, title: "matches"},
+      { route: 'players/:id',  moduleId: 'player-detail', name:'players'},  
+      { route: 'matches/:id', moduleId: 'match-detail', name:'matches'}
+      
     ]);
     // config.map([
     //   { route: '',              moduleId: 'no-selection',   title: 'Select'},
     //   { route: 'players/:id',  moduleId: 'player-detail', name:'players'},
-    //   { route: 'matches/:id',  moduleId: 'match-detail', name:'matches'}
     // ]);
 
     this.router = router;

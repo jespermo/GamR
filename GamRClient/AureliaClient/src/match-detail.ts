@@ -4,10 +4,29 @@ import {Api} from './api';
 import {areEqual} from './utility';
 // import {MatchUpdated,MatchViewed} from './messages';
 
+interface IDictionary {
+    add(key: string, value: any): void;
+    remove(key: string): void;
+    containsKey(key: string): boolean;
+    keys(): string[];
+    values(): any[];
+}
+
 interface Match {
   date: Date;
   location: string;
+  games: Array<Game>;
+  players: Array<string>;
 }
+
+interface Game {
+  meldingPlayer: string;
+  melding: string;
+  numberOfVips: number;
+  meldedTricks: Array<number>;
+  result : {[player: string] : number};
+}
+
 
 @inject(Api,EventAggregator)
 export class MatchDetail {
