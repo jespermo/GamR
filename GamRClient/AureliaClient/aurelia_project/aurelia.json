@@ -140,6 +140,11 @@
             "main": "aurelia-testing",
             "env": "dev"
           },
+          {
+             "name": "moment", 
+             "path": "../node_modules/moment",
+             "main": "moment" 
+          },
           "jquery",
           {
             "name": "bootstrap",

@@ -15,8 +15,11 @@
     "bluebird": "^3.4.1",
     "bootstrap": "^3.3.7",
     "jquery": "^2.2.4",
+    "moment": "^2.18.1",
     "systemjs": "latest",
     "systemjs-plugin-text": "latest",
+    "timings": "0.0.0",
+    "typings": "^2.1.1",
     "whatwg-fetch": "^2.0.3"
   },
   "peerDependencies": {},
