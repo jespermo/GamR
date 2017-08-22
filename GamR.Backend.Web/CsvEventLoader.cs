@@ -14,7 +14,8 @@ namespace GamR.Backend.Web
         private readonly Repository<Player> _playerRepository;
         private readonly Repository<Match> _matchRepository;
         private readonly Repository<Game> _gameRepository;
-        
+        public static Guid GameGuid;
+
         private const int PlayerOneScoreIndex = 2;
         private const int PlayerTwoScoreIndex = 3;
         private const int PlayerThreeScoreIndex = 4;
@@ -47,7 +48,8 @@ namespace GamR.Backend.Web
                 await _playerRepository.Save(player);
             }
 
-            var match = Match.Create(Guid.NewGuid(), DateTime.Parse(allLinesSplit[0][1]), allLinesSplit[0][4]);
+            GameGuid = Guid.NewGuid();
+            var match = Match.Create(GameGuid, DateTime.Parse(allLinesSplit[0][1]), allLinesSplit[0][4]);
             await _matchRepository.Save(match);
 
             var games = allLinesSplit.Skip(5)

@@ -17,15 +17,25 @@ interface Match {
   location: string;
   games: Array<Game>;
   players: Array<string>;
+  aggregateScores: Array<AggregateResult>;
+}
+interface AggregateResult{
+  matchPlayer: string;
+  sum: number;
 }
 
 interface Game {
   meldingPlayer: string;
   melding: string;
   numberOfVips: number;
-  meldedTricks: Array<number>;
-  result : {[player: string] : number};
+  meldedTricks: number;
+  result : Array<PlayerResult>;
 }
+interface PlayerResult{
+  player: string;
+  result: number;
+}
+
 
 
 @inject(Api,EventAggregator)

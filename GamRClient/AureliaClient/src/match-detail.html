@@ -34,17 +34,47 @@
     <div class="panel">
       <div class="panel-heading">
         <h3 class="panel-title">GAMES</h3>
-        </div>
-       <div class="game-list">
-           <ul class="list-group">
-              <li repeat.for="game of match.games" >
-        
-                <h4 class="list-group-item-heading">${game.meldingPlayer}</h4>
-                <p class="list-group-item-text">${game.melding}</p>
-              </li>
-            </ul>
       </div>
-  </div>
+       <div class="game-list">
+         <table>
+          <!--<th repeat.for="player of match.players">${player}</th>-->
+          <tr><td repeat.for="aggregateScore of match.aggregateScores">
+            <h3>${aggregateScore.sum}</h3>
+          </td>
+          </tr>
+            <tr repeat.for="game of match.games">
+               <td repeat.for="result of game.result">
+                    <div class="form-group">
+                      <div class="row-sm-10">
+                        <input type="text" placeholder="date" class="form-control" value.bind="result.result">
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+              <!--<td>
+                <div class="form-group">
+                  <div class="col-sm-10">
+                    <input type="text" placeholder="date" class="form-control" value.bind="game.meldingPlayer">
+                  </div>
+                </div>
+              </td>
+              <td>
+                   <div class="form-group">
+                    <div class="col-sm-10">
+                      <input type="text" placeholder="date" class="form-control" value.bind="game.meldingPlayer">
+                   </div>
+                  </div>
+              </td>
+              <td>
+                <div class="form-group">
+                    <div class="col-sm-10">
+                      <input type="text" placeholder="date" class="form-control" value.bind="game.meldedTricks">
+                   </div>
+                  </div>
+              </td>-->
+
+      </div>
   </div>
   
     </div>
