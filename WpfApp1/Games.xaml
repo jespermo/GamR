@@ -1,0 +1,19 @@
+<UserControl x:Class="WpfApp1.Games"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Grid>
+    <ListView ItemsSource="{Binding Games}">
+        <ListView.View>
+            <GridView>
+                    <GridViewColumn Header="Melder" DisplayMemberBinding="{Binding Melder}"/>
+                    <GridViewColumn Header="Melding" DisplayMemberBinding="{Binding Melding}"/>
+                    <GridViewColumn Header="Stik" DisplayMemberBinding="{Binding Trumps}"/>
+                    <GridViewColumn Header="Resultat" DisplayMemberBinding="{Binding Result}"/>
+                    <GridViewColumn/>
+                </GridView>
+        </ListView.View>
+    </ListView>
+</Grid>
+</UserControl>
+    
+    
