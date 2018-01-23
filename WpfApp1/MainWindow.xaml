@@ -15,14 +15,12 @@
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Row="0" Grid.Column="0" Background="Purple">
-            
-        </Grid>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Text}"/>
         <local:MatchStatus Grid.Row="0" Grid.Column="1" DataContext="{Binding MatchStatusViewModel}"/>
         <Grid Grid.Row="1" Grid.Column="0" Background="Red">
             <StackPanel Orientation="Vertical">
                 <Button Content="Add Game" Command="{Binding AddNewGame}"/>
-                <Button Content="Statistics"/>
+                <Button Content="Update Test" Command="{Binding TestCommand}"/>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1" Grid.Column="1" Background="Green">

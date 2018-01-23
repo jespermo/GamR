@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
@@ -10,22 +11,24 @@ namespace WpfApp1.ViewModels
     public class NewGameViewModel : ViewModelBase
     {
         private readonly IService _service;
+        private readonly IRequester _requester;
         private string _melder;
         private string _melding;
         private int _trumps;
         private decimal _result;
 
-        public NewGameViewModel(IService service)
+        public NewGameViewModel(IService service, IRequester requester)
         {
             _service = service;
-            SaveGameCommand = new RelayCommand<Window>(Save, CanSave);
+            _requester = requester;
+            SaveGameCommand = new AsyncDelegateCommand<Window>(Save);
             CancelCommand = new RelayCommand<Window>(Cancel);
             PropertyChanged += RaiseCanExecute;
         }
 
         private void RaiseCanExecute(object sender, PropertyChangedEventArgs e)
         {
-            SaveGameCommand.RaiseCanExecuteChanged();
+            //TODO
         }
 
         public ICommand CancelCommand { get; set; }
@@ -36,16 +39,18 @@ namespace WpfApp1.ViewModels
         }
 
 
-        public RelayCommand<Window> SaveGameCommand { get; set; }
+        public ICommand SaveGameCommand { get; set; }
 
         private bool CanSave(Window obj)
         {
             return !string.IsNullOrEmpty(Melder) && !string.IsNullOrEmpty(Melding) && _trumps >= 0 && Result != 0;
         }
 
-        private void Save(Window obj)
+        private async Task Save(Window obj)
         {
-            _service.AddNewGame(new Game(Melder, Melding, Trumps, Result));
+            var game = new Game(Melder, Melding, Trumps, Result);
+            _service.AddNewGame(game);
+            var res = await _requester.Post<string>(game,"Game");
             obj?.Close();
         }
 
