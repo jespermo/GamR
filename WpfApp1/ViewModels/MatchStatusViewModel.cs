@@ -27,9 +27,9 @@ namespace WpfApp1.ViewModels
 
         private void AddGame(GameAdded obj)
         {
-            var playerStatus = PlayerStatusViewModels.SingleOrDefault(ps => ps.Name == obj.Game.Melder);
-            if (playerStatus == null) return;
-            playerStatus.TotalScore += obj.Game.Result;
+            //var playerStatus = PlayerStatusViewModels.SingleOrDefault(ps => ps.Name == obj.Game.Melder);
+            //if (playerStatus == null) return;
+            //playerStatus.TotalScore += obj.Game.Result;
         }
     }
 

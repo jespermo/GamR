@@ -1,6 +1,7 @@
 ﻿﻿using System;
  using System.Dynamic;
-using System.Threading;
+ using System.Linq;
+ using System.Threading;
 using GamR.Backend.Core.Framework;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Nancy;
@@ -10,18 +11,22 @@ namespace GamR.Backend.Web.Modules
 {
     public class GamesModule : NancyModule
     {
-        public GamesModule()
+        public GamesModule(MatchView matches)
         {
-            Get("/Test", _ => Response.AsJson($"{DateTime.Now}"));
+            Get("/Games", _ =>
+            {
+                var games = matches.Games.Select(g => $"{g.Value.Player1Score} {g.Value.Player2Score} {g.Value.Player3Score} {g.Value.Player4Score}");
+                return Response.AsJson(games);
+            });
             Post("/Game", _ =>
             {
-                TestGame request = this.Bind<TestGame>();
+                CreateGame request = this.Bind<CreateGame>();
 
                 return Response.AsJson($"OK: {request.Melder}-{request.Melding}-{request.Trumps}-{request.Result}");
             });
         }
 
-        class TestGame
+        class CreateGame
         {
             public string Melder { get; }
             public string Melding { get; }

@@ -24,7 +24,8 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainViewModel(new Service(), new Requester());
+            var requester = new Requester();
+            DataContext = new MainViewModel(new Service(requester), requester);
         }
     }
 }

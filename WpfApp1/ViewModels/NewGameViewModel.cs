@@ -48,9 +48,9 @@ namespace WpfApp1.ViewModels
 
         private async Task Save(Window obj)
         {
-            var game = new Game(Melder, Melding, Trumps, Result);
-            _service.AddNewGame(game);
-            var res = await _requester.Post<string>(game,"Game");
+            //var game = new Game(Melder, Melding, Trumps, Result);
+            //_service.AddNewGame(game);
+            //var res = await _requester.Post<string>(game,"Game");
             obj?.Close();
         }
 

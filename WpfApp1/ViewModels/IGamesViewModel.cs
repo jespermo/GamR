@@ -4,6 +4,6 @@ namespace WpfApp1.ViewModels
 {
     public interface IGamesViewModel
     {
-        ObservableCollection<IGame> Games { get; }
+        ObservableCollection<string> Games { get; }
     }
 }

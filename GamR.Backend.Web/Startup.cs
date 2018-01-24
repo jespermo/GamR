@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Autofac;
+﻿using Autofac;
 using Autofac.Core;
 using GamR.Backend.Core.Aggregates;
 using GamR.Backend.Core.Events;
@@ -49,23 +46,6 @@ namespace GamR.Backend.Web
         }
     }
 
-    public class PlayersView : ISubscribeToEvent<PlayerCreated>, ISubscribeToEvent<PlayerNameChanged>
-    {
-        private readonly Dictionary<Guid, string> _playerNames = new Dictionary<Guid, string>();
-
-        public async Task Handle(PlayerCreated args)
-        {
-            _playerNames.Add(args.Id, args.Name);
-        }
-
-        public async Task Handle(PlayerNameChanged args)
-        {
-            _playerNames[args.Id] = args.NewName;
-        }
-
-        public IEnumerable<string> Players => _playerNames.Values;
-    }
-
     public class BootStrapper : AutofacNancyBootstrapper
     {
         protected override void ConfigureApplicationContainer(ILifetimeScope existingContainer)
@@ -73,10 +53,18 @@ namespace GamR.Backend.Web
             var eventBus = new InMemoryBus();
 
             var playersView = new PlayersView();
-
+            var matchesView = new MatchesView();
             eventBus.Subscribe<PlayerCreated>(playersView);
+            eventBus.Subscribe(matchesView);
+            var matchView = new MatchView();
+            eventBus.Subscribe<MatchCreated>(matchView);
+            eventBus.Subscribe<GameStarted>(matchView);
+            eventBus.Subscribe<Melded>(matchView);
+            eventBus.Subscribe<GameEnded>(matchView);
 
             existingContainer.Update(x => x.RegisterInstance(playersView));
+            existingContainer.Update(x => x.RegisterInstance(matchView));
+            existingContainer.Update(x => x.RegisterInstance(matchesView));
             existingContainer.Update(x => x.RegisterType<CsvEventLoader>().SingleInstance());
             existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventSubscriber>());
             existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventPublisher>());

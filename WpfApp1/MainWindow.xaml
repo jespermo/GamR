@@ -17,18 +17,30 @@
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Text}"/>
         <local:MatchStatus Grid.Row="0" Grid.Column="1" DataContext="{Binding MatchStatusViewModel}"/>
-        <Grid Grid.Row="1" Grid.Column="0" Background="Red">
+        <Grid Grid.Row="0" Grid.Column="0">
             <StackPanel Orientation="Vertical">
                 <Button Content="Add Game" Command="{Binding AddNewGame}"/>
                 <Button Content="Update Test" Command="{Binding TestCommand}"/>
             </StackPanel>
         </Grid>
-        <Grid Grid.Row="1" Grid.Column="1" Background="Green">
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="150"/>
             </Grid.ColumnDefinitions>
             <local:Games DataContext="{Binding GamesViewModel}" Grid.Column="0" Background="Yellow"/>
+            <Grid Grid.Column="1">
+                <StackPanel>
+                    <TextBlock TextAlignment="Center" HorizontalAlignment="Center" FontSize="36" Text="STATISTICS">
+                        <TextBlock.LayoutTransform>
+                            <TransformGroup>
+                                <RotateTransform Angle="90" />
+                                <ScaleTransform ScaleX="-1" ScaleY="-1"/>
+                            </TransformGroup>
+                            </TextBlock.LayoutTransform>
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
         </Grid> 
     </Grid>
 </Window>

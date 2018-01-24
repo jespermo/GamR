@@ -19,7 +19,7 @@ namespace GamR.Backend.Core.Framework
             instance.Hydrate(result);
             return instance;
         }
-            
+
         public async Task Save(T aggregate)
         {
             var changes = aggregate.UncommittedChanges();

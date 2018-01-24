@@ -8,21 +8,21 @@ namespace WpfApp1.ViewModels
     public class GamesViewModel : ViewModelBase, IGamesViewModel
     {
         private readonly IService _service;
-        private ObservableCollection<IGame> _games;
+        private ObservableCollection<string> _games;
 
         public GamesViewModel(IService service)
         {
             _service = service;
-            Games = new ObservableCollection<IGame>(_service.GetGames());
+            Games = new ObservableCollection<string>(_service.GetGames());
             Messenger.Default.Register<GameAdded>(this, AddGame);
         }
 
         private void AddGame(GameAdded obj)
         {
-            _games.Add(obj.Game);
+            //_games.Add(obj.Game);
         }
 
-        public ObservableCollection<IGame> Games
+        public ObservableCollection<string> Games
         {
             get { return _games; }
             set

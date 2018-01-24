@@ -5,10 +5,11 @@
     <ListView ItemsSource="{Binding Games}">
         <ListView.View>
             <GridView>
-                    <GridViewColumn Header="Melder" DisplayMemberBinding="{Binding Melder}"/>
+                    <GridViewColumn Header="Melder" DisplayMemberBinding="{Binding GameInfo}"/>
+                    <!--<GridViewColumn Header="Opposition" DisplayMemberBinding="{Binding NonMelders}"/>
                     <GridViewColumn Header="Melding" DisplayMemberBinding="{Binding Melding}"/>
-                    <GridViewColumn Header="Stik" DisplayMemberBinding="{Binding Trumps}"/>
-                    <GridViewColumn Header="Resultat" DisplayMemberBinding="{Binding Result}"/>
+                    <GridViewColumn Header="Stik" DisplayMemberBinding="{Binding Trumps}"/>-->
+                    <!--<GridViewColumn Header="Resultat" DisplayMemberBinding="{Binding Result}"/>-->
                     <GridViewColumn/>
                 </GridView>
         </ListView.View>
