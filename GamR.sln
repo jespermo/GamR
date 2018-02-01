@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{011F209C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamR.Parser", "GamR.Parser\GamR.Parser.csproj", "{CB60FBC4-BDD4-4F1C-8A1D-F9AFE2F360EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamR.Client.Wpf", "WpfApp1\GamR.Client.Wpf.csproj", "{0CE73AB5-A51B-430C-8E0B-AE5E3F2D40BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamR.Client.Wpf", "GamR.Client.Wpf\GamR.Client.Wpf.csproj", "{0CE73AB5-A51B-430C-8E0B-AE5E3F2D40BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

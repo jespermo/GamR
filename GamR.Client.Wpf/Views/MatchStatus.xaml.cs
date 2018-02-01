@@ -1,4 +1,4 @@
-namespace WpfApp1
+namespace GamR.Client.Wpf.Views
 {
     public partial class MatchStatus
     {

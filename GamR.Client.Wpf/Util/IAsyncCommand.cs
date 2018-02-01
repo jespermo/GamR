@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace WpfApp1
+namespace GamR.Client.Wpf.Util
 {
     public interface IAsyncCommand : ICommand
     {

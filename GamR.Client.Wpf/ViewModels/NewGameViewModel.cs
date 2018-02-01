@@ -4,9 +4,11 @@ using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using WpfApp1.Services;
+using GamR.Client.Wpf.Models;
+using GamR.Client.Wpf.Services;
+using GamR.Client.Wpf.Util;
 
-namespace WpfApp1.ViewModels
+namespace GamR.Client.Wpf.ViewModels
 {
     public class NewGameViewModel : ViewModelBase
     {
@@ -48,9 +50,8 @@ namespace WpfApp1.ViewModels
 
         private async Task Save(Window obj)
         {
-            //var game = new Game(Melder, Melding, Trumps, Result);
-            //_service.AddNewGame(game);
-            //var res = await _requester.Post<string>(game,"Game");
+            var game = new Game();
+            await _service.AddNewGame(game);
             obj?.Close();
         }
 

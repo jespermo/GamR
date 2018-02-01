@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
-using WpfApp1.Services;
-using WpfApp1.ViewModels;
-using WpfApp1.Views;
+using GamR.Client.Wpf.Events;
+using GamR.Client.Wpf.Models;
+using GamR.Client.Wpf.Services;
+using GamR.Client.Wpf.ViewModels.Interfaces;
+using GamR.Client.Wpf.Views;
 
-namespace WpfApp1
+namespace GamR.Client.Wpf.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
@@ -29,14 +30,14 @@ namespace WpfApp1
             GamesViewModel = new GamesViewModel(service);
             MatchStatusViewModel = new MatchStatusViewModel(service);
             AddNewGame = new RelayCommand(CreateNewGame);
-            CreateMatchCommand = new AsyncDelegateCommand<object>(CreateMatch);
-            UpdateMatches();
+            CreateMatchCommand = new RelayCommand(CreateMatch);
+            Task.Run(async () => await UpdateMatches());
             Messenger.Default.Register<MatchCreated>(this, Update);
         }
 
         private void Update(MatchCreated obj)
         {
-            UpdateMatches();
+            Task.Run(async ()=>await UpdateMatches());
         }
 
         private async Task UpdateMatches()
@@ -45,10 +46,9 @@ namespace WpfApp1
             Matches = new ObservableCollection<Match>(matches);
         }
 
-        private async Task CreateMatch(object arg)
+        private void CreateMatch()
         {
-            var newGameDialog = new NewMatchDialog();
-            newGameDialog.DataContext = new NewMatchViewModel(_requester);
+            var newGameDialog = new NewMatchDialog {DataContext = new NewMatchViewModel(_requester)};
             newGameDialog.Show();
         }
 
@@ -96,11 +96,5 @@ namespace WpfApp1
         }
 
         public ICommand AddNewGame { get; set; }
-    }
-
-    public class Match
-    {
-        public DateTime Date { get; set; }
-        public string Location { get; set; }
     }
 }

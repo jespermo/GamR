@@ -1,9 +1,12 @@
 ﻿using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
-using WpfApp1.Services;
+using GamR.Client.Wpf.Events;
+using GamR.Client.Wpf.Services;
+using GamR.Client.Wpf.ViewModels.Interfaces;
 
-namespace WpfApp1.ViewModels
+namespace GamR.Client.Wpf.ViewModels
 {
     public class GamesViewModel : ViewModelBase, IGamesViewModel
     {
@@ -13,8 +16,13 @@ namespace WpfApp1.ViewModels
         public GamesViewModel(IService service)
         {
             _service = service;
-            Games = new ObservableCollection<string>(_service.GetGames());
+            Task.Run(async ()=> await UpdateGamesCollection());
             Messenger.Default.Register<GameAdded>(this, AddGame);
+        }
+
+        private async Task UpdateGamesCollection()
+        {
+            Games = new ObservableCollection<string>(await _service.GetGames());
         }
 
         private void AddGame(GameAdded obj)

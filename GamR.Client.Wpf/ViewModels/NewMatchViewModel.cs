@@ -4,9 +4,12 @@ using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using WpfApp1.Services;
+using GamR.Client.Wpf.Events;
+using GamR.Client.Wpf.Models;
+using GamR.Client.Wpf.Services;
+using GamR.Client.Wpf.Util;
 
-namespace WpfApp1
+namespace GamR.Client.Wpf.ViewModels
 {
     public class NewMatchViewModel : ViewModelBase
     {
@@ -45,19 +48,9 @@ namespace WpfApp1
             set { Set(ref _date, value); }
         }
 
-        class NewMatch
-        {
-            public DateTime Date { get; set; }
-            public string Location { get; set; }
-        }
-
         private void Cancel(Window arg)
         {
             arg?.Close();
         }
-    }
-
-    public  class MatchCreated
-    {
     }
 }

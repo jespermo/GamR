@@ -1,7 +1,8 @@
 ﻿using System.Windows;
-using WpfApp1.Services;
+using GamR.Client.Wpf.Services;
+using GamR.Client.Wpf.ViewModels;
 
-namespace WpfApp1
+namespace GamR.Client.Wpf
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

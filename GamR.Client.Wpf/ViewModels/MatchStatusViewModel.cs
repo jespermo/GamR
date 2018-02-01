@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
-using WpfApp1.Services;
+using GamR.Client.Wpf.Events;
+using GamR.Client.Wpf.Services;
+using GamR.Client.Wpf.ViewModels.Interfaces;
 
-namespace WpfApp1.ViewModels
+namespace GamR.Client.Wpf.ViewModels
 {
     public class MatchStatusViewModel : ViewModelBase,IMatchStatusViewModel
     {
@@ -16,7 +17,12 @@ namespace WpfApp1.ViewModels
         {
             _service = service;
             Messenger.Default.Register<GameAdded>(this,AddGame);
-            PlayerStatusViewModels = new ObservableCollection<PlayerStatusViewModel>(_service.GetStatusses());
+            Task.Run(async () => await UpdatePlayerStatusCollection());
+        }
+
+        private async Task UpdatePlayerStatusCollection()
+        {
+            PlayerStatusViewModels = new ObservableCollection<PlayerStatusViewModel>(await _service.GetStatusses());
         }
 
         public ObservableCollection<PlayerStatusViewModel> PlayerStatusViewModels
