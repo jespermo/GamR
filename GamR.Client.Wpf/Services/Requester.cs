@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Net.Http;
+using System.Net.Mime;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -10,9 +12,9 @@ namespace GamR.Client.Wpf.Services
         private Uri baseUri = new Uri(@"http://localhost:49434");
         private readonly TimeSpan Timeout = new TimeSpan(0, 0, 20);
 
-        public async Task<T> Get<T>(string path) where T : class
+        public async Task<T> Get<T>(string path)
         {
-            using (var client = new HttpClient {BaseAddress = baseUri, Timeout = Timeout})
+            using (var client = CreateHttpClient<T>())
             {
                 var responseMessage = await client.GetAsync(path);
                 var response = JsonConvert.DeserializeObject<T>(await responseMessage.Content.ReadAsStringAsync());
@@ -20,14 +22,24 @@ namespace GamR.Client.Wpf.Services
             }
         }
 
-        public async Task<T> Post<T>(object request, string path) where T : class
+        public async Task<T> Post<T>(object request, string path)
         {
-            using (var client = new HttpClient { BaseAddress = baseUri, Timeout = Timeout })
+            using (var client = CreateHttpClient<T>())
             {
-                var responseMessage = await client.PostAsync(path, new StringContent(JsonConvert.SerializeObject(request)));
+                var responseMessage = await client.PostAsync(path, CreateStringContentWithEncodingAndMediaType<T>(request));
                 var response = JsonConvert.DeserializeObject<T>(await responseMessage.Content.ReadAsStringAsync());
                 return response;
             }
+        }
+
+        private HttpClient CreateHttpClient<T>()
+        {
+            return new HttpClient { BaseAddress = baseUri, Timeout = Timeout};
+        }
+
+        private static StringContent CreateStringContentWithEncodingAndMediaType<T>(object request)
+        {
+            return new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
         }
     }
 }

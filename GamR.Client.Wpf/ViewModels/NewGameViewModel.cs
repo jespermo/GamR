@@ -13,16 +13,14 @@ namespace GamR.Client.Wpf.ViewModels
     public class NewGameViewModel : ViewModelBase
     {
         private readonly IService _service;
-        private readonly IRequester _requester;
         private string _melder;
         private string _melding;
         private int _trumps;
         private decimal _result;
 
-        public NewGameViewModel(IService service, IRequester requester)
+        public NewGameViewModel(IService service)
         {
             _service = service;
-            _requester = requester;
             SaveGameCommand = new AsyncDelegateCommand<Window>(Save);
             CancelCommand = new RelayCommand<Window>(Cancel);
             PropertyChanged += RaiseCanExecute;

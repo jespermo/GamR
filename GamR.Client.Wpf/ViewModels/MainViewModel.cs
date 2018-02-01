@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -10,6 +11,7 @@ using GamR.Client.Wpf.Models;
 using GamR.Client.Wpf.Services;
 using GamR.Client.Wpf.ViewModels.Interfaces;
 using GamR.Client.Wpf.Views;
+using WpfApp1.Annotations;
 
 namespace GamR.Client.Wpf.ViewModels
 {
@@ -18,37 +20,31 @@ namespace GamR.Client.Wpf.ViewModels
         private string _title;
         private IGamesViewModel _gamesViewModel;
         private readonly IService _service;
-        private readonly IRequester _requester;
         private string _text;
         private ObservableCollection<Match> _matches;
 
-        public MainViewModel(IService service, IRequester requester)
+        public MainViewModel([NotNull] IService service)
         {
-            _service = service;
-            _requester = requester;
+            _service = service ?? throw new ArgumentNullException(nameof(service));
             Title = "GAMR";
             GamesViewModel = new GamesViewModel(service);
             MatchStatusViewModel = new MatchStatusViewModel(service);
             AddNewGame = new RelayCommand(CreateNewGame);
             CreateMatchCommand = new RelayCommand(CreateMatch);
             Task.Run(async () => await UpdateMatches());
-            Messenger.Default.Register<MatchCreated>(this, Update);
+            Messenger.Default.Register<MatchCreated>(this, match => Task.Run(async () => await UpdateMatches()));
         }
 
-        private void Update(MatchCreated obj)
-        {
-            Task.Run(async ()=>await UpdateMatches());
-        }
 
         private async Task UpdateMatches()
         {
-            var matches = await _requester.Get<List<Match>>("/matchs");
+            var matches = await _service.GetMatches();
             Matches = new ObservableCollection<Match>(matches);
         }
 
         private void CreateMatch()
         {
-            var newGameDialog = new NewMatchDialog {DataContext = new NewMatchViewModel(_requester)};
+            var newGameDialog = new NewMatchDialog {DataContext = new NewMatchViewModel(_service)};
             newGameDialog.Show();
         }
 
@@ -72,7 +68,7 @@ namespace GamR.Client.Wpf.ViewModels
         private void CreateNewGame()
         {
             var newGameDialog = new NewGameDialog();
-            newGameDialog.DataContext = new NewGameViewModel(_service, _requester);
+            newGameDialog.DataContext = new NewGameViewModel(_service);
             newGameDialog.Show();
         }
 

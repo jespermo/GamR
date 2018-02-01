@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
 using GamR.Client.Wpf.Events;
 using GamR.Client.Wpf.Models;
 using GamR.Client.Wpf.ViewModels;
-using WpfApp1;
 
 namespace GamR.Client.Wpf.Services
 {
@@ -36,6 +36,16 @@ namespace GamR.Client.Wpf.Services
         {
 
             return Task.FromResult(new List<PlayerStatusViewModel>());//games.GroupBy(g=>g.GameInfo.Split(' ')[0]).Select(x=>new PlayerStatusViewModel(x.Key,2)).ToList());
+        }
+
+        public async Task<Guid> CreateMatch(NewMatch newMatch)
+        {
+            return await _requester.Post<Guid>(newMatch, "/match");
+        }
+
+        public async Task<List<Match>> GetMatches()
+        {
+            return await _requester.Get<List<Match>>("/matches");
         }
     }
 }

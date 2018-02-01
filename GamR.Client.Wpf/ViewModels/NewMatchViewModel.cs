@@ -8,18 +8,19 @@ using GamR.Client.Wpf.Events;
 using GamR.Client.Wpf.Models;
 using GamR.Client.Wpf.Services;
 using GamR.Client.Wpf.Util;
+using WpfApp1.Annotations;
 
 namespace GamR.Client.Wpf.ViewModels
 {
     public class NewMatchViewModel : ViewModelBase
     {
-        private readonly IRequester _requester;
         private DateTime _date;
         private string _location;
+        private IService _service;
 
-        public NewMatchViewModel(IRequester requester)
+        public NewMatchViewModel([NotNull] IService service)
         {
-            _requester = requester;
+            _service = service ?? throw new ArgumentNullException(nameof(service));
             CreateMatchCommand = new AsyncDelegateCommand<Window>(Save);
             CancelCommand = new RelayCommand<Window>(Cancel);
             Date = DateTime.Now;
@@ -31,9 +32,18 @@ namespace GamR.Client.Wpf.ViewModels
 
         private async Task Save(Window arg)
         {
-            await _requester.Post<NewMatch>(new NewMatch {Date = Date, Location = Location}, "/Match");
-            MessengerInstance.Send(new MatchCreated());
-            arg?.Close();
+            try
+            {
+                var matchId = await _service.CreateMatch(new NewMatch { Date = Date, Location = Location });
+                MessengerInstance.Send(new MatchCreated(matchId));
+                arg?.Close();
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public string Location

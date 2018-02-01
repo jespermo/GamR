@@ -13,7 +13,7 @@ namespace GamR.Client.Wpf
         {
             InitializeComponent();
             var requester = new Requester();
-            DataContext = new MainViewModel(new Service(requester), requester);
+            DataContext = new MainViewModel(new Service(requester));
         }
     }
 }

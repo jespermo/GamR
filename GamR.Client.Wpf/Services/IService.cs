@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GamR.Client.Wpf.Models;
 using GamR.Client.Wpf.ViewModels;
@@ -11,5 +12,7 @@ namespace GamR.Client.Wpf.Services
         Task<List<string>> GetGames();
         Task AddNewGame(Game game);
         Task<List<PlayerStatusViewModel>> GetStatusses();
+        Task<Guid> CreateMatch(NewMatch newMatch);
+        Task<List<Match>> GetMatches();
     }
 }

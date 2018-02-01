@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using GamR.Backend.Core.Aggregates;
 using GamR.Backend.Core.Framework;
-using Microsoft.AspNetCore.Mvc;
+using GamR.Backend.Web.ApiModels;
 using Nancy;
 using Nancy.ModelBinding;
 
@@ -11,35 +9,35 @@ namespace GamR.Backend.Web.Modules
 {
     public class MatchModule : NancyModule
     {
-        private readonly Repository<Match> _matchRepository;
+        private readonly Repository<Core.Aggregates.Match> _matchRepository;
+        private readonly MatchesView _matchesView;
 
-        public MatchModule(Repository<Match> matchRepository)
+        public MatchModule(Repository<Core.Aggregates.Match> matchRepository, MatchesView matchesView)
         {
             _matchRepository = matchRepository;
-            //Get("/matches", args =>
-            //                {
-            //                    var response = Response.AsJson<List<Match>>(_matches);
-            //                    response.Headers.Add("Content-Type", "application/json");
-            //                    return response;
-            //                });
+            _matchesView = matchesView;
+            Get("/matches", args =>
+                            {
+                                var matches = _matchesView.Matches.Select(kvp =>
+                                        new Match {Id = kvp.Key, Date = kvp.Value.Date, Location = kvp.Value.Location})
+                                    .ToList();
+                                var response = Response.AsJson(matches);
+                                response.Headers.Add("Content-Type", "application/json");
+                                return response;
+                            });
             //Get("/match/{id}", args =>
             //                   {
             //                       return Enumerable.SingleOrDefault<Match>(_matches, p => p.Id == args.id);
             //                   });
             Post("/match", async args =>
             {
-                var createMatch = this.Bind<CreateMatch>();
-                var match = Match.Create(Guid.NewGuid(), createMatch.Date, createMatch.Location);
+                var newMatch = this.Bind<NewMatch>();
+                var match = Core.Aggregates.Match.Create(Guid.NewGuid(), newMatch.Date, newMatch.Location);
                 await _matchRepository.Save(match);
-                return Response.AsJson("");
+                return Response.AsJson(match.Id);
             });
         }
     }
 
-    public class CreateMatch
-    {
-        public DateTime Date { get; set; }
 
-        public string Location { get; set; }
-    }
 }
