@@ -20,7 +20,9 @@ namespace WpfApp1.Services
         public Service(IRequester requester)
         {
             _requester = requester;
-            Games = Task.Run(async () => await _requester.Get<List<string>>("/Games")).Result;
+            Games = _requester.Get<List<string>>("/Games").GetAwaiter().GetResult();
+
+            Games = Task.Run(async () => await _requester.Get<List<string>>("/Games")).GetAwaiter().GetResult();
         }
         private List<string> Games { get; }
 

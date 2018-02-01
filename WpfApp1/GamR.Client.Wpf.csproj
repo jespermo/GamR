@@ -50,6 +50,7 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Activities" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -79,6 +80,7 @@
       <DependentUpon>Games.xaml</DependentUpon>
     </Compile>
     <Compile Include="IAsyncCommand.cs" />
+    <Compile Include="NewMatchViewModel.cs" />
     <Compile Include="Services\IRequester.cs" />
     <Compile Include="ViewModels\IMatchStatusViewModel.cs" />
     <Compile Include="MatchStatus.xaml.cs">
@@ -93,6 +95,9 @@
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="Views\NewGameDialog.xaml.cs">
       <DependentUpon>NewGameDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NewMatchDialog.xaml.cs">
+      <DependentUpon>NewMatchDialog.xaml</DependentUpon>
     </Compile>
     <Page Include="Games.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -116,6 +121,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\NewGameDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NewMatchDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

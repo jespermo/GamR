@@ -20,10 +20,18 @@
         <Grid Grid.Row="0" Grid.Column="0">
             <StackPanel Orientation="Vertical">
                 <Button Content="Add Game" Command="{Binding AddNewGame}"/>
-                <Button Content="Update Test" Command="{Binding TestCommand}"/>
+                <Button Content="Update Test" Command="{Binding CreateMatchCommand}"/>
             </StackPanel>
         </Grid>
-        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+        <ListView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Matches}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Date" Width="40" DisplayMemberBinding="{Binding Date}" />
+                    <GridViewColumn Header="Location" Width="55" DisplayMemberBinding="{Binding Location}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Grid Grid.Row="1" Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="150"/>

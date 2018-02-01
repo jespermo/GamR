@@ -14,11 +14,12 @@ namespace WpfApp1.Services
 
     public class Requester : IRequester
     {
-        private Uri baseUri = new Uri(@"http://localhost:49435");
+        private Uri baseUri = new Uri(@"http://localhost:49434");
+        private readonly TimeSpan Timeout = new TimeSpan(0, 0, 20);
 
         public async Task<T> Get<T>(string path) where T : class
         {
-            using (var client = new HttpClient {BaseAddress = baseUri, Timeout = new TimeSpan(0, 0, 2)})
+            using (var client = new HttpClient {BaseAddress = baseUri, Timeout = Timeout})
             {
                 var responseMessage = await client.GetAsync(path);
                 var response = JsonConvert.DeserializeObject<T>(await responseMessage.Content.ReadAsStringAsync());
@@ -28,7 +29,7 @@ namespace WpfApp1.Services
 
         public async Task<T> Post<T>(object request, string path) where T : class
         {
-            using (var client = new HttpClient { BaseAddress = baseUri, Timeout = new TimeSpan(0, 0, 2) })
+            using (var client = new HttpClient { BaseAddress = baseUri, Timeout = Timeout })
             {
                 var responseMessage = await client.PostAsync(path, new StringContent(JsonConvert.SerializeObject(request)));
                 var response = JsonConvert.DeserializeObject<T>(await responseMessage.Content.ReadAsStringAsync());
