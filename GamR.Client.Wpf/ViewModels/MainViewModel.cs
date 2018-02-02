@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
@@ -22,19 +22,31 @@ namespace GamR.Client.Wpf.ViewModels
         private readonly IService _service;
         private string _text;
         private ObservableCollection<Match> _matches;
+        private Match _selectedMatch;
 
-        public MainViewModel([NotNull] IService service)
+        public MainViewModel(
+            [NotNull] IService service, 
+            [NotNull] IGamesViewModel gamesViewModel,
+            [NotNull] IMatchStatusViewModel matchStatusViewModel)
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
-            Title = "GAMR";
-            GamesViewModel = new GamesViewModel(service);
-            MatchStatusViewModel = new MatchStatusViewModel(service);
+            GamesViewModel = gamesViewModel ?? throw new ArgumentNullException(nameof(gamesViewModel));
+            MatchStatusViewModel = matchStatusViewModel ?? throw new ArgumentNullException(nameof(matchStatusViewModel));
             AddNewGame = new RelayCommand(CreateNewGame);
             CreateMatchCommand = new RelayCommand(CreateMatch);
             Task.Run(async () => await UpdateMatches());
             Messenger.Default.Register<MatchCreated>(this, match => Task.Run(async () => await UpdateMatches()));
         }
+        
 
+        public Match SelectedMatch
+        {
+            get { return _selectedMatch; }
+            set
+            {
+                Set(ref _selectedMatch, value, broadcast:true);
+            }
+        }
 
         private async Task UpdateMatches()
         {
@@ -72,22 +84,14 @@ namespace GamR.Client.Wpf.ViewModels
             newGameDialog.Show();
         }
 
-        public string Title
-        {
-            get { return _title; }
-            private set
-            {
-                _title = value;
-            }
-        }
+        public string Title { get; } = "GAMR";
 
         public IGamesViewModel GamesViewModel
         {
             get { return _gamesViewModel; }
             set
             {
-                _gamesViewModel = value;
-                
+                Set(ref _gamesViewModel,  value);
             }
         }
 

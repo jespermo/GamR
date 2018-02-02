@@ -16,20 +16,17 @@ namespace GamR.Client.Wpf.Services
         {
             _requester = requester;
 
-            Games = Task.Run(async () => await _requester.Get<List<string>>("/Games")).GetAwaiter().GetResult();
-        }
-        private List<string> Games { get; }
-
-        public Task<List<string>> GetGames()
-        {
-            return Task.FromResult(Games);
         }
 
-        public Task AddNewGame(Game game)
+        public async Task<List<string>> GetGames(Guid matchId)
         {
-            Games.Add(game.GameInfo);
+            return await _requester.Get<List<string>>($"/match/{matchId}/games");
+        }
+
+        public async Task AddNewGame(Game game)
+        {
+            await _requester.Post<bool>(game, "/game");
             Messenger.Default.Send(new GameAdded(game));
-            return Task.CompletedTask;
         }
 
         public  Task<List<PlayerStatusViewModel>> GetStatusses()

@@ -9,7 +9,7 @@ namespace GamR.Client.Wpf.Services
 {
     public interface IService
     {
-        Task<List<string>> GetGames();
+        Task<List<string>> GetGames(Guid matchId);
         Task AddNewGame(Game game);
         Task<List<PlayerStatusViewModel>> GetStatusses();
         Task<Guid> CreateMatch(NewMatch newMatch);

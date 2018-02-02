@@ -38,23 +38,4 @@ namespace GamR.Client.Wpf.ViewModels
             //playerStatus.TotalScore += obj.Game.Result;
         }
     }
-
-    public class PlayerStatusViewModel : ViewModelBase
-    {
-        private decimal _totalScore;
-
-        public PlayerStatusViewModel(string name, decimal totalScore)
-        {
-            Name = name;
-            TotalScore = totalScore;
-        }
-
-        public string Name { get; }
-
-        public decimal TotalScore
-        {
-            get { return _totalScore; }
-            set { Set(ref _totalScore, value); }
-        }
-    }
 }

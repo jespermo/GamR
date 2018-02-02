@@ -1,8 +1,10 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using GamR.Client.Wpf.Events;
+using GamR.Client.Wpf.Models;
 using GamR.Client.Wpf.Services;
 using GamR.Client.Wpf.ViewModels.Interfaces;
 
@@ -16,13 +18,26 @@ namespace GamR.Client.Wpf.ViewModels
         public GamesViewModel(IService service)
         {
             _service = service;
-            Task.Run(async ()=> await UpdateGamesCollection());
             Messenger.Default.Register<GameAdded>(this, AddGame);
-        }
 
-        private async Task UpdateGamesCollection()
+            MessengerInstance.Register<PropertyChangedMessage<Match>>(this, m =>
+            {
+                var newValueId = m.NewValue?.Id;
+                if (newValueId == null)
+                {
+                    Games = new ObservableCollection<string>();
+                }
+                Task.Run(async () =>
+                {
+                    await UpdateGamesCollection(newValueId.Value);
+                });
+            });
+        }
+        
+
+        private async Task UpdateGamesCollection(Guid matchId)
         {
-            Games = new ObservableCollection<string>(await _service.GetGames());
+            Games = new ObservableCollection<string>(await _service.GetGames(matchId));
         }
 
         private void AddGame(GameAdded obj)

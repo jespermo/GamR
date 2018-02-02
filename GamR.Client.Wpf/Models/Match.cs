@@ -6,5 +6,7 @@ namespace GamR.Client.Wpf.Models
     {
         public DateTime Date { get; set; }
         public string Location { get; set; }
+
+        public Guid Id { get; set; }
     }
 }

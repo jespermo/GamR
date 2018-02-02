@@ -17,18 +17,27 @@ namespace GamR.Backend.Web.Modules
             _matchRepository = matchRepository;
             _matchesView = matchesView;
             Get("/matches", args =>
-                            {
-                                var matches = _matchesView.Matches.Select(kvp =>
-                                        new Match {Id = kvp.Key, Date = kvp.Value.Date, Location = kvp.Value.Location})
-                                    .ToList();
-                                var response = Response.AsJson(matches);
-                                response.Headers.Add("Content-Type", "application/json");
-                                return response;
-                            });
-            //Get("/match/{id}", args =>
-            //                   {
-            //                       return Enumerable.SingleOrDefault<Match>(_matches, p => p.Id == args.id);
-            //                   });
+            {
+                var matches = _matchesView.Matches.Select(kvp =>
+                        new Match {Id = kvp.Key, Date = kvp.Value.Date, Location = kvp.Value.Location})
+                    .ToList();
+                var response = Response.AsJson(matches);
+                response.Headers.Add("Content-Type", "application/json");
+                return response;
+            });
+
+            Get("/match/{matchId}/games", args =>
+            {
+                if (!Guid.TryParse(args.matchId, out Guid matchId))
+                {
+                    return HttpStatusCode.NotFound;
+                }
+                 
+                var match = _matchesView.Matches[matchId];
+                var response = Response.AsJson(match.Games);
+                response.Headers.Add("Content-Type", "application/json");
+                return response;
+            });
             Post("/match", async args =>
             {
                 var newMatch = this.Bind<NewMatch>();

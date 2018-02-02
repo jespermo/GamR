@@ -20,10 +20,11 @@
         <Grid Grid.Row="0" Grid.Column="0">
             <StackPanel Orientation="Vertical">
                 <Button Content="Add Game" Command="{Binding AddNewGame}"/>
-                <Button Content="Update Test" Command="{Binding CreateMatchCommand}"/>
+                <Button Content="New Match" Command="{Binding CreateMatchCommand}"/>
             </StackPanel>
         </Grid>
-        <ListView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Matches}">
+        <ListView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Matches}"
+                  SelectedItem="{Binding SelectedMatch}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Date" Width="40" DisplayMemberBinding="{Binding Date}" />
