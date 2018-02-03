@@ -7,6 +7,7 @@ namespace GamR.Backend.Core.Events
 {
     public class Melded : Event
     {
+        private Guid _matchId;
         public Guid Id { get; }
         public Guid GameId { get; }
         public string Melding { get; }
@@ -15,10 +16,13 @@ namespace GamR.Backend.Core.Events
         public int NumberOfTricks { get; }
         public string NumberOfVips { get; }
 
-        public Melded(Guid id, Guid gameId, string melding, IEnumerable<Guid> meldingPlayerIds, int numberOfTricks, string numberOfVips)
+        public Guid MatchId { get; }
+
+        public Melded(Guid id, Guid gameId,  Guid matchId, string melding, IEnumerable<Guid> meldingPlayerIds, int numberOfTricks, string numberOfVips)
         {
             Id = id;
             GameId = gameId;
+            MatchId = matchId;
             Melding = melding;
             MeldingPlayerIds = meldingPlayerIds.ToList();
             NumberOfTricks = numberOfTricks;

@@ -18,9 +18,9 @@ namespace GamR.Client.Wpf.Services
 
         }
 
-        public async Task<List<string>> GetGames(Guid matchId)
+        public async Task<List<Game>> GetGames(Guid matchId)
         {
-            return await _requester.Get<List<string>>($"/match/{matchId}/games");
+            return await _requester.Get<List<Game>>($"/match/{matchId}/games");
         }
 
         public async Task AddNewGame(Game game)

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using GamR.Backend.Core.Events;
 using GamR.Backend.Core.Framework;
 
-namespace GamR.Backend.Web
+namespace GamR.Backend.Web.Views
 {
     public class PlayersView : ISubscribeToEvent<PlayerCreated>, ISubscribeToEvent<PlayerNameChanged>
     {
@@ -20,7 +20,6 @@ namespace GamR.Backend.Web
             _playerNames[args.Id] = args.NewName;
         }
 
-        public IEnumerable<string> Players => _playerNames.Values;
+        public Dictionary<Guid, string> Players => _playerNames;
     }
-
 }

@@ -60,12 +60,12 @@ namespace GamR.Backend.Core.Aggregates
         
         public void AddMelding(string melding, IEnumerable<Guid> meldingPlayerIds, int numberOfTricks, string numberOfVips)
         {
-            BaseApply(new Melded(Guid.NewGuid(), Id, melding, meldingPlayerIds, numberOfTricks, numberOfVips));
+            BaseApply(new Melded(Guid.NewGuid(), Id,MatchId, melding, meldingPlayerIds, numberOfTricks, numberOfVips));
         }
 
         public void EndGame(decimal player1, decimal player2, decimal player3, decimal player4, int actualNumberOfTricks)
         {
-            BaseApply(new GameEnded(Guid.NewGuid(), Id, player1, player2, player3, player4, actualNumberOfTricks));
+            BaseApply(new GameEnded(Guid.NewGuid(), Id, MatchId, player1, player2, player3, player4, actualNumberOfTricks));
         }
 
         public void Reshuffle(string reason)

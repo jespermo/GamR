@@ -16,9 +16,19 @@ namespace GamR.Client.Wpf.Services
         {
             using (var client = CreateHttpClient<T>())
             {
-                var responseMessage = await client.GetAsync(path);
-                var response = JsonConvert.DeserializeObject<T>(await responseMessage.Content.ReadAsStringAsync());
-                return response;
+                try
+                {
+                    var responseMessage = await client.GetAsync(path);
+                    var content = await responseMessage.Content.ReadAsStringAsync();
+                    var response = JsonConvert.DeserializeObject<T>(content);
+                    return response;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+             
             }
         }
 

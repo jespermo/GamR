@@ -4,6 +4,7 @@ using GamR.Backend.Core.Aggregates;
 using GamR.Backend.Core.Events;
 using GamR.Backend.Core.Framework;
 using GamR.Backend.Core.Framework.Impl;
+using GamR.Backend.Web.Views;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -52,19 +53,15 @@ namespace GamR.Backend.Web
         {
             var eventBus = new InMemoryBus();
 
-            var playersView = new PlayersView();
-            var matchesView = new MatchesView();
-            eventBus.Subscribe<PlayerCreated>(playersView);
-            eventBus.Subscribe(matchesView);
-            var matchView = new MatchView();
-            eventBus.Subscribe<MatchCreated>(matchView);
-            eventBus.Subscribe<GameStarted>(matchView);
-            eventBus.Subscribe<Melded>(matchView);
-            eventBus.Subscribe<GameEnded>(matchView);
-
-            existingContainer.Update(x => x.RegisterInstance(playersView));
-            existingContainer.Update(x => x.RegisterInstance(matchView));
-            existingContainer.Update(x => x.RegisterInstance(matchesView));
+            var viewContainer = new ViewContainer();
+            
+            eventBus.Subscribe<PlayerCreated>(viewContainer);
+            eventBus.Subscribe<MatchCreated>(viewContainer);
+            eventBus.Subscribe<GameStarted>(viewContainer);
+            eventBus.Subscribe<Melded>(viewContainer);
+            eventBus.Subscribe<GameEnded>(viewContainer);
+            eventBus.Subscribe<PlayerNameChanged>(viewContainer);
+            existingContainer.Update(x => x.RegisterInstance(viewContainer).SingleInstance());
             existingContainer.Update(x => x.RegisterType<CsvEventLoader>().SingleInstance());
             existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventSubscriber>());
             existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventPublisher>());
@@ -93,5 +90,4 @@ namespace GamR.Backend.Web
             base.ApplicationStartup(container, pipelines);
         }
     }
-
 }

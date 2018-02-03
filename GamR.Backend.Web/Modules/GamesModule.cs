@@ -3,7 +3,8 @@
  using System.Linq;
  using System.Threading;
 using GamR.Backend.Core.Framework;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+ using GamR.Backend.Web.Views;
+ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Nancy;
  using Nancy.ModelBinding;
 
@@ -11,13 +12,13 @@ namespace GamR.Backend.Web.Modules
 {
     public class GamesModule : NancyModule
     {
-        public GamesModule(MatchView matches)
+        public GamesModule(ViewContainer views)
         {
-            Get("/Games", _ =>
-            {
-                var games = matches.Games.Select(g => $"{g.Value.Player1Score} {g.Value.Player2Score} {g.Value.Player3Score} {g.Value.Player4Score}");
-                return Response.AsJson(games);
-            });
+            //Get("/Games", _ =>
+            //{
+            //    var games = matches.MatchesView.Select(g => $"{g.Value.Player1Score} {g.Value.Player2Score} {g.Value.Player3Score} {g.Value.Player4Score}");
+            //    return Response.AsJson(games);
+            //});
             Post("/Game", _ =>
             {
                 CreateGame request = this.Bind<CreateGame>();

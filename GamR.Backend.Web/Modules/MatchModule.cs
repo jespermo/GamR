@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GamR.Backend.Core.Framework;
 using GamR.Backend.Web.ApiModels;
+using GamR.Backend.Web.Views;
 using Nancy;
 using Nancy.ModelBinding;
 
@@ -10,15 +12,15 @@ namespace GamR.Backend.Web.Modules
     public class MatchModule : NancyModule
     {
         private readonly Repository<Core.Aggregates.Match> _matchRepository;
-        private readonly MatchesView _matchesView;
+        private readonly ViewContainer _views;
 
-        public MatchModule(Repository<Core.Aggregates.Match> matchRepository, MatchesView matchesView)
+        public MatchModule(Repository<Core.Aggregates.Match> matchRepository, ViewContainer views)
         {
             _matchRepository = matchRepository;
-            _matchesView = matchesView;
+            _views = views;
             Get("/matches", args =>
             {
-                var matches = _matchesView.Matches.Select(kvp =>
+                var matches = _views.MatchesView.Matches.Select(kvp =>
                         new Match {Id = kvp.Key, Date = kvp.Value.Date, Location = kvp.Value.Location})
                     .ToList();
                 var response = Response.AsJson(matches);
@@ -33,8 +35,18 @@ namespace GamR.Backend.Web.Modules
                     return HttpStatusCode.NotFound;
                 }
                  
-                var match = _matchesView.Matches[matchId];
-                var response = Response.AsJson(match.Games);
+                var match = _views.MatchViews[matchId];
+                var players = _views.PlayersView.Players;
+                var response = Response.AsJson(match.Games.Select(g =>
+                    new Game
+                    {
+                        MeldingPlayers = g.Value.MeldingPlayers?.Select(x=>players[x]).ToList(),
+                        Melding = g.Value.Melding,
+                        NumberOfTrics = g.Value.NumberOfTricks,
+                        NumberOfVips = g.Value.NumberOfVips,
+                        ActualNumberOfTricks = g.Value.ActualNumberOfTricks
+                    }
+                ).ToList());
                 response.Headers.Add("Content-Type", "application/json");
                 return response;
             });
@@ -47,6 +59,12 @@ namespace GamR.Backend.Web.Modules
             });
         }
     }
-
-
+    public class Game
+    {
+        public List<string> MeldingPlayers { get; set; }
+        public string Melding { get; set; }
+        public int NumberOfTrics { get; set; }
+        public string NumberOfVips { get; set; }
+        public int ActualNumberOfTricks { get; set; }
+    }
 }

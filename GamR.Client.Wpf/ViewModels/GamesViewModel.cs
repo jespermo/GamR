@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
@@ -37,7 +39,12 @@ namespace GamR.Client.Wpf.ViewModels
 
         private async Task UpdateGamesCollection(Guid matchId)
         {
-            Games = new ObservableCollection<string>(await _service.GetGames(matchId));
+            var games = await _service.GetGames(matchId);
+            Games = new ObservableCollection<string>(games.Select(c=>
+            {
+                var meldingPlayers = string.Join(",",c.MeldingPlayers ?? new List<string>());
+                return $"{meldingPlayers}-{c.Melding}-{c.NumberOfTrics}-{c.ActualNumberOfTricks}";
+            }));
         }
 
         private void AddGame(GameAdded obj)
