@@ -4,6 +4,7 @@ using System.Linq;
 using GamR.Backend.Core.Framework;
 using GamR.Backend.Web.ApiModels;
 using GamR.Backend.Web.Views;
+using GamR.Backend.Web.Views.ViewTypes;
 using Nancy;
 using Nancy.ModelBinding;
 
@@ -42,14 +43,63 @@ namespace GamR.Backend.Web.Modules
                     {
                         MeldingPlayers = g.Value.MeldingPlayers?.Select(x=>players[x]).ToList(),
                         Melding = g.Value.Melding,
-                        NumberOfTrics = g.Value.NumberOfTricks,
+                        NumberOfTricks = g.Value.NumberOfTricks,
                         NumberOfVips = g.Value.NumberOfVips,
-                        ActualNumberOfTricks = g.Value.ActualNumberOfTricks
-                    }
+                        ActualNumberOfTricks = g.Value.ActualNumberOfTricks,
+                        Players = CreateScore(g.Value,players)                        }
                 ).ToList());
                 response.Headers.Add("Content-Type", "application/json");
                 return response;
             });
+
+            Get("/match/{matchId}/status", args =>
+            {
+                if (!Guid.TryParse(args.matchId, out Guid matchId))
+                {
+                    return HttpStatusCode.NotFound;
+                }
+
+                var match = _views.MatchViews[matchId];
+                var players = _views.PlayersView.Players;
+                var playerGuids = match.Games.Values.First().Players.ToList();
+                var p1Score = new PlayerScore
+                {
+                    Score = match.Games.Sum(g => g.Value.Player1Score),
+                    Name = players[playerGuids[0]]
+                };
+                var p2Score = new PlayerScore
+                {
+                    Score = match.Games.Sum(g => g.Value.Player2Score),
+                    Name = players[playerGuids[1]]
+                };
+
+                var p3Score = new PlayerScore
+                {
+                    Score = match.Games.Sum(g => g.Value.Player3Score),
+                    Name = players[playerGuids[2]]
+                };
+
+                var p4Score = new PlayerScore
+                {
+                    Score = match.Games.Sum(g => g.Value.Player4Score),
+                    Name = players[playerGuids[3]]
+                };
+                var response = Response.AsJson(
+                    new MatchStatus
+                    {
+                        PlayerStatus = new List<PlayerScore>
+                        {
+                            p1Score,
+                            p2Score,
+                            p3Score,
+                            p4Score
+                        }
+                    }
+                );
+                response.Headers.Add("Content-Type", "application/json");
+                return response;
+            });
+
             Post("/match", async args =>
             {
                 var newMatch = this.Bind<NewMatch>();
@@ -58,13 +108,54 @@ namespace GamR.Backend.Web.Modules
                 return Response.AsJson(match.Id);
             });
         }
+
+        private List<PlayerScore> CreateScore(MatchGame match, Dictionary<Guid, string> players)
+        {
+            var playerScores = new List<PlayerScore>();
+            var playerGuids = players.Keys.ToList();
+            playerScores.Add(new PlayerScore
+            {
+                Id = playerGuids[0], Name = players[playerGuids[0]], Score = match.Player1Score
+            });
+            playerScores.Add(new PlayerScore
+            {
+                Id = playerGuids[1], Name = players[playerGuids[1]], Score = match.Player1Score
+            });
+            playerScores.Add(new PlayerScore
+            {
+                Id = playerGuids[2], Name = players[playerGuids[2]], Score = match.Player1Score
+            });
+            playerScores.Add(
+                new PlayerScore
+                {
+                    Id = playerGuids[3], Name = players[playerGuids[3]], Score = match.Player1Score
+                });
+            return playerScores;
+        }
+    
     }
+
+    public class MatchStatus
+    {
+        public List<PlayerScore> PlayerStatus { get; set; }
+    }
+
     public class Game
     {
         public List<string> MeldingPlayers { get; set; }
         public string Melding { get; set; }
-        public int NumberOfTrics { get; set; }
+        public int NumberOfTricks { get; set; }
         public string NumberOfVips { get; set; }
         public int ActualNumberOfTricks { get; set; }
+
+        public List<PlayerScore> Players {get; set; }
+
+    }
+
+    public class PlayerScore
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public decimal Score { get; set; }
     }
 }

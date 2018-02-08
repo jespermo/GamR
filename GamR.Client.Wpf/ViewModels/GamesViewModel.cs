@@ -15,7 +15,7 @@ namespace GamR.Client.Wpf.ViewModels
     public class GamesViewModel : ViewModelBase, IGamesViewModel
     {
         private readonly IService _service;
-        private ObservableCollection<string> _games;
+        private ObservableCollection<Game> _games;
 
         public GamesViewModel(IService service)
         {
@@ -27,12 +27,16 @@ namespace GamR.Client.Wpf.ViewModels
                 var newValueId = m.NewValue?.Id;
                 if (newValueId == null)
                 {
-                    Games = new ObservableCollection<string>();
+                    Games = new ObservableCollection<Game>();
                 }
-                Task.Run(async () =>
+                else
                 {
-                    await UpdateGamesCollection(newValueId.Value);
-                });
+                    Task.Run(async () =>
+                    {
+                        await UpdateGamesCollection(newValueId.Value);
+                    });
+
+                }
             });
         }
         
@@ -40,11 +44,7 @@ namespace GamR.Client.Wpf.ViewModels
         private async Task UpdateGamesCollection(Guid matchId)
         {
             var games = await _service.GetGames(matchId);
-            Games = new ObservableCollection<string>(games.Select(c=>
-            {
-                var meldingPlayers = string.Join(",",c.MeldingPlayers ?? new List<string>());
-                return $"{meldingPlayers}-{c.Melding}-{c.NumberOfTrics}-{c.ActualNumberOfTricks}";
-            }));
+            Games = new ObservableCollection<Game>(games);
         }
 
         private void AddGame(GameAdded obj)
@@ -52,7 +52,7 @@ namespace GamR.Client.Wpf.ViewModels
             //_games.Add(obj.Game);
         }
 
-        public ObservableCollection<string> Games
+        public ObservableCollection<Game> Games
         {
             get { return _games; }
             set

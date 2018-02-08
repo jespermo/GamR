@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
 using GamR.Client.Wpf.Events;
 using GamR.Client.Wpf.Models;
-using GamR.Client.Wpf.ViewModels;
 
 namespace GamR.Client.Wpf.Services
 {
@@ -29,10 +28,9 @@ namespace GamR.Client.Wpf.Services
             Messenger.Default.Send(new GameAdded(game));
         }
 
-        public  Task<List<PlayerStatusViewModel>> GetStatusses()
+        public async Task<MatchStatus> GetStatusses(Guid matchId)
         {
-
-            return Task.FromResult(new List<PlayerStatusViewModel>());//games.GroupBy(g=>g.GameInfo.Split(' ')[0]).Select(x=>new PlayerStatusViewModel(x.Key,2)).ToList());
+            return await _requester.Get<MatchStatus>($"/match/{matchId}/status");
         }
 
         public async Task<Guid> CreateMatch(NewMatch newMatch)

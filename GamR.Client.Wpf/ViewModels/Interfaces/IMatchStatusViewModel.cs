@@ -1,9 +1,10 @@
 ﻿using System.Collections.ObjectModel;
+using GamR.Client.Wpf.Models;
 
 namespace GamR.Client.Wpf.ViewModels.Interfaces
 {
     public interface IMatchStatusViewModel
     {
-        ObservableCollection<PlayerStatusViewModel> PlayerStatusViewModels { get; }
+        MatchStatus MatchStatus { get; }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using GamR.Backend.Core.Aggregates;
 using GamR.Backend.Core.Framework;
@@ -37,7 +38,7 @@ namespace GamR.Backend.Web
         internal async Task LoadEvents(string file)
         {
             var currentDir = Directory.GetCurrentDirectory();
-            var allLines = File.ReadAllLines($"{currentDir}\\..\\resources\\{file}");
+            var allLines = File.ReadAllLines($"{currentDir}\\..\\resources\\{file}", Encoding.UTF7);
 
             var separator = ';';
             var allLinesSplit = allLines.Select(l => l.Split(separator)).ToArray();
@@ -64,6 +65,9 @@ namespace GamR.Backend.Web
 
         private static Game NewGame(string[] row, Match match, IEnumerable<Player> players)
         {
+            try
+            {
+
             var game = Game.StartNewGame(Guid.NewGuid(), match.Id, players.Select(x => x.Id));
 
             if (row[7] == "OMBLANDING")
@@ -82,6 +86,13 @@ namespace GamR.Backend.Web
             
             game.EndGame(decimal.Parse(row[PlayerOneScoreIndex]), decimal.Parse(row[PlayerTwoScoreIndex]), decimal.Parse(row[PlayerThreeScoreIndex]), decimal.Parse(row[PlayerFourScoreIndex]), row[ActualTricksIndex].ValueOrZero());
             return game;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         

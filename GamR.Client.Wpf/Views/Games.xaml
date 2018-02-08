@@ -5,12 +5,12 @@
     <ListView ItemsSource="{Binding Games}">
         <ListView.View>
             <GridView>
-                    <GridViewColumn Header="Melder" DisplayMemberBinding="{Binding GameInfo}"/>
-                    <!--<GridViewColumn Header="Opposition" DisplayMemberBinding="{Binding NonMelders}"/>
+                    <GridViewColumn Header="Melder" DisplayMemberBinding="{Binding MeldingPlayersString}"/>
                     <GridViewColumn Header="Melding" DisplayMemberBinding="{Binding Melding}"/>
-                    <GridViewColumn Header="Stik" DisplayMemberBinding="{Binding Trumps}"/>-->
-                    <!--<GridViewColumn Header="Resultat" DisplayMemberBinding="{Binding Result}"/>-->
-                    <GridViewColumn/>
+                    <GridViewColumn Header="Tricks" DisplayMemberBinding="{Binding NumberOfTricks}"/>
+                    <GridViewColumn Header="Vips" DisplayMemberBinding="{Binding NumberOfVips}"/>
+                    <GridViewColumn Header="ActualTricks" DisplayMemberBinding="{Binding ActualNumberOfTricks}"/>
+                    <GridViewColumn Header="Scores" DisplayMemberBinding="{Binding PlayerScores}"/>
                 </GridView>
         </ListView.View>
     </ListView>

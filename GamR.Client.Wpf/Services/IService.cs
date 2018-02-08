@@ -11,7 +11,7 @@ namespace GamR.Client.Wpf.Services
     {
         Task<List<Game>> GetGames(Guid matchId);
         Task AddNewGame(Game game);
-        Task<List<PlayerStatusViewModel>> GetStatusses();
+        Task<MatchStatus> GetStatusses(Guid matchId);
         Task<Guid> CreateMatch(NewMatch newMatch);
         Task<List<Match>> GetMatches();
     }

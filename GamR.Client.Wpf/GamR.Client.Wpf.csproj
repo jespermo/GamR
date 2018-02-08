@@ -82,6 +82,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Events\GameAdded.cs" />
+    <Compile Include="Models\MatchStatus.cs" />
+    <Compile Include="Models\PlayerScore.cs" />
     <Compile Include="Services\Requester.cs" />
     <Compile Include="Services\Service.cs" />
     <Compile Include="Util\AsyncDelegateCommand.cs" />
@@ -89,7 +91,6 @@
     <Compile Include="Models\Match.cs" />
     <Compile Include="Events\MatchCreated.cs" />
     <Compile Include="Models\NewMatch.cs" />
-    <Compile Include="ViewModels\PlayerStatusViewModel.cs" />
     <Compile Include="Views\Games.xaml.cs">
       <DependentUpon>Games.xaml</DependentUpon>
     </Compile>

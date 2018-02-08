@@ -17,7 +17,7 @@
         <TextBlock Grid.Row="1" Grid.Column="0" Text="PLAYER"/>
         <TextBlock Grid.Row="2" Grid.Column="0" Text="SCORE"/>
         <ItemsControl Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" 
-                      ItemsSource="{Binding PlayerStatusViewModels}" >
+                      ItemsSource="{Binding MatchStatus.PlayerStatus}" >
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal"/>
@@ -32,7 +32,7 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <TextBlock Width="70" Grid.Row="0" Text="{Binding Name}"/>
-                        <TextBlock Width="70"  Grid.Row="1" Text="{Binding TotalScore}"/>
+                        <TextBlock Width="70"  Grid.Row="1" Text="{Binding Score}"/>
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

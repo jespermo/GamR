@@ -1,8 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using GamR.Client.Wpf.Events;
+using GamR.Client.Wpf.Models;
 using GamR.Client.Wpf.Services;
 using GamR.Client.Wpf.ViewModels.Interfaces;
 
@@ -11,31 +12,42 @@ namespace GamR.Client.Wpf.ViewModels
     public class MatchStatusViewModel : ViewModelBase,IMatchStatusViewModel
     {
         private readonly IService _service;
-        private ObservableCollection<PlayerStatusViewModel> _playerStatusViewModels;
+        private MatchStatus _matchStatus;
+        private Guid _matchId;
 
         public MatchStatusViewModel(IService service)
         {
             _service = service;
-            Messenger.Default.Register<GameAdded>(this,AddGame);
-            Task.Run(async () => await UpdatePlayerStatusCollection());
+            Messenger.Default.Register<GameAdded>(this,Update);
+            MessengerInstance.Register<PropertyChangedMessage<Match>>(this, m =>
+            {
+
+                var newValue = m.NewValue?.Id;
+                if (newValue == null)
+                {
+                    MatchStatus = null;
+                }
+                else
+                {
+                    Task.Run(async () =>
+                    {
+                        _matchId = newValue.Value;
+                        MatchStatus = await _service.GetStatusses(_matchId);
+                    });
+                }
+            });
         }
 
-        private async Task UpdatePlayerStatusCollection()
+        private void Update(GameAdded obj)
         {
-            PlayerStatusViewModels = new ObservableCollection<PlayerStatusViewModel>(await _service.GetStatusses());
+            Task.Run(async () => MatchStatus = await _service.GetStatusses(_matchId));
         }
 
-        public ObservableCollection<PlayerStatusViewModel> PlayerStatusViewModels
+        public MatchStatus MatchStatus
         {
-            get { return _playerStatusViewModels; }
-            set { Set(ref _playerStatusViewModels, value); }
+            get { return _matchStatus; }
+            set { Set(ref _matchStatus, value); }
         }
-
-        private void AddGame(GameAdded obj)
-        {
-            //var playerStatus = PlayerStatusViewModels.SingleOrDefault(ps => ps.Name == obj.Game.Melder);
-            //if (playerStatus == null) return;
-            //playerStatus.TotalScore += obj.Game.Result;
-        }
+        
     }
 }
