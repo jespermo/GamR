@@ -12,11 +12,11 @@ namespace GamR.Backend.Web.Modules
 
         private static List<Player> _players;
 
-        public PlayerModule(ViewContainer viewContainer)
+        public PlayerModule(PlayersViewManager playersViewManager)
         {
             Get("/players", args =>
             {
-                var response = Response.AsJson(viewContainer.PlayersView.Players
+                var response = Response.AsJson(playersViewManager.Players
                     .Select(x => new Player {Name = x.Value, Id = x.Key}).ToList());
                                 response.Headers.Add("Content-Type","application/json");
                                 return response;

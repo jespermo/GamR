@@ -27,6 +27,11 @@ namespace GamR.Backend.Web.Views.ViewManagers
             _games.TryAdd(matchId, new Dictionary<Guid, MatchGameView>());
         }
 
+        public ImmutableList<MatchGameView> GetById(Guid id)
+        {
+            return _games[id].Values.ToImmutableList();
+        }
+        
         public async Task Handle(Core.Events.GameStarted args)
         {
             EnsureMatch(args.MatchId);
@@ -37,15 +42,15 @@ namespace GamR.Backend.Web.Views.ViewManagers
         {
             _games[args.MatchId][args.GameId].AddMelding(args.Melding, args.MeldingPlayerIds, args.NumberOfTricks, args.NumberOfVips);
         }
-
-        public async Task Handle(Core.Events.GameEnded args)
+        
+        public Task Handle(GameEnded args)
         {
-            _games[args.MatchId][args.GameId].EndGame(args.ActualNumberOfTricks, args.Player1Score, args.Player2Score, args.Player3Score, args.Player4Score);
-        }
-
-        public IEnumerable<MatchGameView> GetById(Guid id)
-        {
-            return ImmutableList.ToImmutableList<MatchGameView>(_games[id].Values);
+            decimal player1Score = args.Result.Values.ToList()[0];
+            decimal player2Score = args.Result.Values.ToList()[1];
+            decimal player3Score = args.Result.Values.ToList()[2];
+            decimal player4Score = args.Result.Values.ToList()[3];
+            _games[args.MatchId][args.GameId].EndGame(args.TeamTricks, player1Score, player2Score, player3Score, player4Score);
+            return Task.CompletedTask;
         }
     }
 }
