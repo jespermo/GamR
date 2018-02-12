@@ -115,8 +115,8 @@ namespace GamR.Backend.Web
         protected override void ApplicationStartup(ILifetimeScope container, IPipelines pipelines)
         {
             var csvEventLoader = container.Resolve<CsvEventLoader>();
-            //csvEventLoader.LoadEvents("whist_20170705.csv").Wait();
-            //csvEventLoader.LoadEvents("whist_20170926.csv").Wait();
+            csvEventLoader.LoadEvents("whist_20170705.csv").Wait();
+            csvEventLoader.LoadEvents("whist_20170926.csv").Wait();
 
             base.ApplicationStartup(container, pipelines);
         }

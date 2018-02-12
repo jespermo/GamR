@@ -29,6 +29,7 @@ namespace GamR.Backend.Web.Views.ViewManagers
 
         public ImmutableList<MatchGameView> GetById(Guid id)
         {
+            if (!_games.ContainsKey(id)) return ImmutableList.Create<MatchGameView>();
             return _games[id].Values.ToImmutableList();
         }
         
