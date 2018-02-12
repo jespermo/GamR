@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GamR.Backend.Web.Views.ViewTypes
 {
-    public class MatchGame
+    public class MatchGameView
     {
         public Guid Id { get; }
         public IReadOnlyCollection<Guid> Players { get; private set; }
@@ -12,7 +12,7 @@ namespace GamR.Backend.Web.Views.ViewTypes
         public int NumberOfTricks { get; private set; }
         public string NumberOfVips { get; private set; }
 
-        public MatchGame(Guid id, IReadOnlyCollection<Guid> players)
+        public MatchGameView(Guid id, IReadOnlyCollection<Guid> players)
         {
             Id = id;
             Players = players;

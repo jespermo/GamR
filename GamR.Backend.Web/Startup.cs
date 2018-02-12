@@ -1,11 +1,18 @@
-﻿﻿using Autofac;
+﻿using System;
+using System.Diagnostics.Tracing;
+using System.Reflection;
+using System.Threading.Tasks;
+using Autofac;
+using GamR.Backend.Core.Aggregates;
 using Events = GamR.Backend.Core.Events;
 using GamR.Backend.Core.Framework;
 using GamR.Backend.Core.Framework.Impl;
 using GamR.Backend.Web.ApiModels;
 using GamR.Backend.Web.Views;
+using GamR.Backend.Web.Views.ViewManagers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,6 +20,7 @@ using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.Bootstrappers.Autofac;
 using Nancy.Owin;
+using Module = Autofac.Module;
 
 namespace GamR.Backend.Web
 {
@@ -27,7 +35,7 @@ namespace GamR.Backend.Web
                 .AddEnvironmentVariables();
 
             Configuration = builder.Build();
-            
+
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -35,10 +43,10 @@ namespace GamR.Backend.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-           
+
             //services.AddMvc();
         }
-        
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
@@ -48,28 +56,47 @@ namespace GamR.Backend.Web
 
     public class BootStrapper : AutofacNancyBootstrapper
     {
+        public static bool IsAssignableToGenericType(Type givenType, Type genericType)
+        {
+            var interfaceTypes = givenType.GetInterfaces();
+
+            foreach (var it in interfaceTypes)
+            {
+                if (it.IsGenericType && it.GetGenericTypeDefinition() == genericType)
+                    return true;
+            }
+
+            if (givenType.IsGenericType && givenType.GetGenericTypeDefinition() == genericType)
+                return true;
+
+            Type baseType = givenType.BaseType;
+            if (baseType == null) return false;
+
+            return IsAssignableToGenericType(baseType, genericType);
+        }
         protected override void ConfigureApplicationContainer(ILifetimeScope existingContainer)
         {
             var eventBus = new InMemoryBus();
-
-            var viewContainer = new ViewContainer();
-            
-            eventBus.Subscribe<Events.PlayerCreated>(viewContainer);
-            eventBus.Subscribe<Events.MatchCreated>(viewContainer);
-            eventBus.Subscribe<Events.GameStarted>(viewContainer);
-            eventBus.Subscribe<Events.Melded>(viewContainer);
-            eventBus.Subscribe<Events.GameEnded>(viewContainer);
-            eventBus.Subscribe<Events.PlayerNameChanged>(viewContainer);
-            existingContainer.Update(x => x.RegisterInstance(viewContainer).SingleInstance());
-
             var jsonEventStore = new JsonEventStore(new InMemoryEventStore(eventBus), "store.json");
             existingContainer.Update(x => x.RegisterInstance<IEventStore>(jsonEventStore));
             existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventSubscriber>());
             existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventPublisher>());
             existingContainer.Update(x => x.RegisterGeneric(typeof(Repository<>)));
             existingContainer.Update(x => x.RegisterType<CsvEventLoader>());
+            
+            
+            var matchesView = new MatchesListViewManager();
+            var gameMatchesViewManager = new MatchGamesViewManger();
+            var playersViewManager = new PlayersViewManager();
+            
+            Task.WaitAll(gameMatchesViewManager.SubscribeAll(eventBus), 
+                         matchesView.SubscribeAll(eventBus),
+                         playersViewManager.SubscribeAll(eventBus));
 
-
+            existingContainer.Update(x => x.RegisterInstance(matchesView).SingleInstance());
+            existingContainer.Update(x => x.RegisterInstance(gameMatchesViewManager).SingleInstance());
+            existingContainer.Update(x => x.RegisterInstance(playersViewManager).SingleInstance());
+            
             base.ConfigureApplicationContainer(existingContainer);
         }
 

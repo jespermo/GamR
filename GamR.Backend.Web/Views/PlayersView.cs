@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GamR.Backend.Core.Events;
 using GamR.Backend.Core.Framework;
+using GamR.Backend.Web.Views.ViewManagers;
 
 namespace GamR.Backend.Web.Views
 {
-    public class PlayersView : ISubscribeToEvent<PlayerCreated>, ISubscribeToEvent<PlayerNameChanged>
+    public class PlayersViewManager 
+        : IViewManager, ISubscribeToEvent<PlayerCreated>, ISubscribeToEvent<PlayerNameChanged>
     {
         private readonly Dictionary<Guid, string> _playerNames = new Dictionary<Guid, string>();
 

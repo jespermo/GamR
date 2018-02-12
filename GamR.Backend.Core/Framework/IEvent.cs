@@ -8,7 +8,7 @@ namespace GamR.Backend.Core.Framework
         Type AggregateType { get; set; }
     }
 
-    public class Event : IEvent
+    public abstract class Event : IEvent
     {
         public int Version { get; set; }
         public Type AggregateType { get; set; }

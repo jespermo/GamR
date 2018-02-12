@@ -12,7 +12,7 @@ namespace GamR.Backend.Web.Modules
 {
     public class GamesModule : NancyModule
     {
-        public GamesModule(ViewContainer views)
+        public GamesModule()
         {
             //Get("/Games", _ =>
             //{

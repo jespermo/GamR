@@ -15,14 +15,14 @@ namespace GamR.Backend.Web.Views.ViewTypes
             Id = id;
             Date = date;
             Location = location;
-            Games = new Dictionary<Guid, MatchGame>();
+            Games = new Dictionary<Guid, MatchGameView>();
         }
 
-        public void AddGame(MatchGame game)
+        public void AddGame(MatchGameView gameView)
         {
-            Games[game.Id] = game;
+            Games[gameView.Id] = gameView;
         }
 
-        public Dictionary<Guid,MatchGame> Games { get; }
+        public Dictionary<Guid,MatchGameView> Games { get; }
     }
 }
