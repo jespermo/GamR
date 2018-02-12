@@ -3,11 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:multiSelectComboBox1="clr-namespace:GamR.Client.Wpf.MultiSelectComboBox"
         mc:Ignorable="d"
         Name="newGameDialog"
         Title="New Game" Height="300" Width="300">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
@@ -22,14 +26,34 @@
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Melder"/>
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Melding"/>
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="Trumps"/>
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="Result"/>
-        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Melder}"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Melding}"/>
-        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Trumps}"/>
-        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Result}"/>
-        <Button Grid.Row="5" Grid.Column="0" Margin="10 2 10 2" Content="Save" Command="{Binding SaveGameCommand}" CommandParameter="{Binding ElementName=newGameDialog}" />
-        <Button Grid.Row="5" Grid.Column="1" Margin="10 2 10 2" Content="Cancel" Command="{Binding CancelCommand}" CommandParameter="{Binding ElementName=newGameDialog}"/>
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="MeldingTrumps"/>
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Vip"/>
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Melding team"/>
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="Result"/>
+        <multiSelectComboBox1:MultiSelectComboBox Grid.Row="0" Grid.Column="1" SelectedItems="{Binding Melders}" ItemsSource="{Binding Players}" Text="Name"/>
+        <ComboBox Grid.Row="1" Grid.Column="1" SelectedItem="{Binding Melding}" ItemsSource="{Binding Meldings}"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding MeldingTrumps}"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Vip}"/>
+        <multiSelectComboBox1:MultiSelectComboBox Grid.Row="4" Grid.Column="1" SelectedItems="{Binding MeldingTeam}" ItemsSource="{Binding Players}"/>
+        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding ActualTricks}" Visibility="{Binding NormalResultVisibility}"/>
+        <Grid Grid.Row="5" Grid.RowSpan="2" Grid.Column="1" Visibility="{Binding NotNormalResultVisibility}">
+            <ItemsControl ItemsSource="{Binding PlayersMinimizingTricks}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Width="50" Text="{Binding Name}"/>
+                            <TextBox Grid.Column="1" Text="{Binding PlayerActualTricks}" />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+        <Button Grid.Row="8" Grid.Column="0" Margin="10 2 10 2" Content="Save" Command="{Binding SaveGameCommand}" CommandParameter="{Binding ElementName=newGameDialog}" />
+        <Button Grid.Row="8" Grid.Column="1" Margin="10 2 10 2" Content="Cancel" Command="{Binding CancelCommand}" CommandParameter="{Binding ElementName=newGameDialog}"/>
         
     </Grid>
 </Window>

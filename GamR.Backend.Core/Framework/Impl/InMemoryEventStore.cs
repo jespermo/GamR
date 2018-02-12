@@ -82,6 +82,16 @@ namespace GamR.Backend.Core.Framework.Impl
             return Task.FromResult(eventDescriptors.Select(desc => desc.Data).ToImmutableList().AsEnumerable());
         }
 
+        public async Task<Dictionary<Guid,IEnumerable<IEvent>>> GetEventsByAggregateType(Type aggregateType)
+        {
+            return await Task.FromResult(_internalStore.Values
+                .SelectMany(x=>x)
+                .Where(x=>x.Data.AggregateType == aggregateType)
+                .OrderBy(x=>x.Version)
+                .GroupBy(x=>x.AggregateId)
+                .ToDictionary(x => x.Key, y => y.Select(x=>x.Data).ToImmutableList().AsEnumerable()));
+        }
+
         private ConcurrencyException CreateConcurrencyException(Guid aggregateId, IEnumerable<IEvent> events, long expectedVersion, long currentVersion)
         {
             return new ConcurrencyException(@"Could not save events, expected version {0}, but found {1} on aggregate {2}

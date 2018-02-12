@@ -83,7 +83,11 @@
     </ApplicationDefinition>
     <Compile Include="Events\GameAdded.cs" />
     <Compile Include="Models\MatchStatus.cs" />
+    <Compile Include="Models\Player.cs" />
     <Compile Include="Models\PlayerScore.cs" />
+    <Compile Include="MultiSelectComboBox\MultiSelectComboBox.xaml.cs">
+      <DependentUpon>MultiSelectComboBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Services\Requester.cs" />
     <Compile Include="Services\Service.cs" />
     <Compile Include="Util\AsyncDelegateCommand.cs" />
@@ -113,6 +117,10 @@
     <Compile Include="Views\NewMatchDialog.xaml.cs">
       <DependentUpon>NewMatchDialog.xaml</DependentUpon>
     </Compile>
+    <Page Include="MultiSelectComboBox\MultiSelectComboBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Games.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -171,6 +179,5 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

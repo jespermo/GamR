@@ -49,7 +49,11 @@ namespace GamR.Backend.Core.Aggregates
 
         internal void Apply(GameEnded @event)
         {
-            Result = new Result(@event.Player1Score, @event.Player2Score, @event.Player3Score, @event.Player4Score, @event.ActualNumberOfTricks);
+            decimal player1Score = @event.Result.Values.ToList()[0];
+            decimal player2Score = @event.Result.Values.ToList()[1];
+            decimal player3Score = @event.Result.Values.ToList()[2];
+            decimal player4Score = @event.Result.Values.ToList()[3];
+            Result = new Result(player1Score, player2Score, player3Score, player4Score, @event.ActualNumberOfTricks);
         }
 
 
@@ -65,12 +69,89 @@ namespace GamR.Backend.Core.Aggregates
 
         public void EndGame(decimal player1, decimal player2, decimal player3, decimal player4, int actualNumberOfTricks)
         {
-            BaseApply(new GameEnded(Guid.NewGuid(), Id, MatchId, player1, player2, player3, player4, actualNumberOfTricks));
+            var results = new Dictionary<Guid, decimal>();
+            results.Add(Players[0],player1);
+            results.Add(Players[1],player2);
+            results.Add(Players[2],player3);
+            results.Add(Players[3],player4);
+            BaseApply(new GameEnded(Guid.NewGuid(), Id, MatchId, results, actualNumberOfTricks));
         }
 
         public void Reshuffle(string reason)
         {
             
+        }
+
+        public void EndGame(int actualNumberOfTricks)
+        {
+            var factor = 0.25m;
+            var results = new Dictionary<Guid, decimal>();
+            if (Melding.Type.EndsWith("SOL"))
+            {
+                var melderWin = true;
+                if (Melding.Type == "SOL")
+                {
+                    factor = 6;
+                    if (actualNumberOfTricks > 1)
+                    {
+                        factor *= -1;
+                    }
+                }
+
+                if (Melding.Type == "REN SOL")
+                {
+                    factor = 12;
+                    if (actualNumberOfTricks > 0)
+                    {
+                        factor *= -1;
+                    }
+                }
+
+                if (Melding.Type == "OPLÆGGER SOL")
+                {
+                    factor = 24;
+                    if (actualNumberOfTricks > 0)
+                    {
+                        factor *= -1;
+                    }
+                }
+                foreach (var meldingPlayerId in Melding.MeldingPlayerIds)
+                {
+                    results.Add(meldingPlayerId,factor);
+                    var otherPlayers = Players.Where(p => p != meldingPlayerId).ToList();
+                    otherPlayers.ForEach(p =>
+                    {
+                        var amount = factor / otherPlayers.Count;
+
+                        if (results.TryGetValue(p, out var playerEntry))
+                        {
+                            playerEntry += amount;
+                        }
+                        else
+                        {
+                            results.Add(p, amount);
+                        }
+                    });
+                }
+            }
+            else
+            {
+                for (int i = 7; i < 13; i++)
+                {
+                    if (i == Melding.NumberOfTricks)
+                    {
+                        break;
+                    }
+                    factor *= 2;
+                }
+                var money = factor * (actualNumberOfTricks - Melding.NumberOfTricks);
+                results = Melding.MeldingPlayerIds.Select(p => new {PlayerId = p, Result = money})
+                    .Concat(Players.Except(Melding.MeldingPlayerIds).Select(p => new {PlayerId = p, Result = -money}))
+                    .ToDictionary(x => x.PlayerId, y => y.Result);
+            }
+
+            BaseApply(new GameEnded(Guid.NewGuid(), Id, MatchId, results, actualNumberOfTricks));
+
         }
     }
 }

@@ -29,6 +29,22 @@ namespace GamR.Backend.Web.Modules
                 return response;
             });
 
+            Post("/match/{matchId}/game", args =>
+            {
+                if (!Guid.TryParse(args.matchId, out Guid matchId))
+                {
+                    return HttpStatusCode.NotFound;
+                }
+                var newGame = this.Bind<Game>();
+                var players = newGame.Players;
+                Core.Aggregates.Game game = Core.Aggregates.Game.StartNewGame(Guid.NewGuid(),matchId, players.Select(p => p.Id));
+                game.AddMelding(newGame.Melding, players.Where(p => newGame.MeldingPlayers.Any(mp => mp == p.Name)).Select(x => x.Id),
+                    newGame.NumberOfTricks,newGame.NumberOfVips);
+                
+                game.EndGame(newGame.ActualNumberOfTricks);
+                return Response.AsJson("");
+            });
+
             Get("/match/{matchId}/games", args =>
             {
                 if (!Guid.TryParse(args.matchId, out Guid matchId))

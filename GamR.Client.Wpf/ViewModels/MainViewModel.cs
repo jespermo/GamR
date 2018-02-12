@@ -32,19 +32,27 @@ namespace GamR.Client.Wpf.ViewModels
             _service = service ?? throw new ArgumentNullException(nameof(service));
             GamesViewModel = gamesViewModel ?? throw new ArgumentNullException(nameof(gamesViewModel));
             MatchStatusViewModel = matchStatusViewModel ?? throw new ArgumentNullException(nameof(matchStatusViewModel));
-            AddNewGame = new RelayCommand(CreateNewGame);
+            AddNewGame = new RelayCommand(CreateNewGame, CanCreateNewGame);
             CreateMatchCommand = new RelayCommand(CreateMatch);
             Task.Run(async () => await UpdateMatches());
             Messenger.Default.Register<MatchCreated>(this, match => Task.Run(async () => await UpdateMatches()));
         }
-        
+
+        private bool CanCreateNewGame()
+        {
+            return _selectedMatch != null;
+        }
+
 
         public Match SelectedMatch
         {
             get { return _selectedMatch; }
             set
             {
-                Set(ref _selectedMatch, value, broadcast:true);
+                if (Set(ref _selectedMatch, value, broadcast: true))
+                {
+                    AddNewGame.RaiseCanExecuteChanged();
+                }
             }
         }
 
@@ -80,7 +88,7 @@ namespace GamR.Client.Wpf.ViewModels
         private void CreateNewGame()
         {
             var newGameDialog = new NewGameDialog();
-            newGameDialog.DataContext = new NewGameViewModel(_service);
+            newGameDialog.DataContext = new NewGameViewModel(_service, _selectedMatch.Id);
             newGameDialog.Show();
         }
 
@@ -95,6 +103,6 @@ namespace GamR.Client.Wpf.ViewModels
             }
         }
 
-        public ICommand AddNewGame { get; set; }
+        public RelayCommand AddNewGame { get; set; }
     }
 }

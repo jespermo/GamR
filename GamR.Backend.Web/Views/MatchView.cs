@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GamR.Backend.Core.Events;
 using GamR.Backend.Core.Framework;
@@ -45,7 +46,11 @@ namespace GamR.Backend.Web.Views
 
         public Task Handle(GameEnded args)
         {
-            Games[args.GameId].EndGame(args.ActualNumberOfTricks,args.Player1Score, args.Player2Score, args.Player3Score, args.Player4Score);
+            decimal player1Score = args.Result.Values.ToList()[0];
+            decimal player2Score = args.Result.Values.ToList()[1];
+            decimal player3Score = args.Result.Values.ToList()[2];
+            decimal player4Score = args.Result.Values.ToList()[3];
+            Games[args.GameId].EndGame(args.ActualNumberOfTricks,player1Score, player2Score, player3Score, player4Score);
             return Task.CompletedTask;
         }
     }

@@ -44,11 +44,15 @@ namespace GamR.Backend.Web
             var allLinesSplit = allLines.Select(l => l.Split(separator)).ToArray();
             
             var players = allLinesSplit[PlayersRow].Skip(2).Take(Players).Select(name => Player.Create(Guid.NewGuid(), name)).ToList();
-            foreach (var player in players)
+            var allPlayers = await _playerRepository.GetAll();
+            if (!allPlayers.Any())
             {
-                await _playerRepository.Save(player);
+                foreach (var player in players)
+                {
+                    await _playerRepository.Save(player);
+                }
             }
-
+            players = await _playerRepository.GetAll();
             GameGuid = Guid.NewGuid();
             var match = Match.Create(GameGuid, DateTime.Parse(allLinesSplit[0][1]), allLinesSplit[0][4]);
             await _matchRepository.Save(match);

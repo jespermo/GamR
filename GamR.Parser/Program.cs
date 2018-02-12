@@ -42,7 +42,7 @@ namespace GamR.Parser
             {
                var aggregatePlayer = Player.Create(Guid.NewGuid(), player);
                await  _playerRepository.Save(aggregatePlayer);
-                playerAggregateIds.Add(aggregatePlayer.Name,aggregatePlayer.Id);
+               playerAggregateIds.Add(aggregatePlayer.Name,aggregatePlayer.Id);
             }
             
             var aggregateMatch = Backend.Core.Aggregates.Match.Create(Guid.NewGuid(), match.Date, match.Location);

@@ -9,5 +9,6 @@ namespace GamR.Backend.Core.Framework
         Task Save<TEvent>(Guid aggregateId, IEnumerable<TEvent> events, long expectedVersion) where TEvent : IEvent;
         Task<IEnumerable<IEvent>> GetEventsByAggregateId(Guid aggregateId);
         Task Save(Guid aggregateId, IEnumerable<IEvent> events, long expectedVersion);
+        Task<Dictionary<Guid,IEnumerable<IEvent>>> GetEventsByAggregateType(Type aggregateType);
     }
 }

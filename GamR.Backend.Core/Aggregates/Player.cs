@@ -27,7 +27,7 @@ namespace GamR.Backend.Core.Aggregates
             BaseApply(new PlayerNameChanged(_id, newName));
         }
 
-        private Player() { }
+        public Player() { }
 
         public static Player Create(Guid id, string name)
         {

@@ -31,6 +31,7 @@ namespace GamR.Backend.Core.Framework
 
         protected void BaseApply<TEvent>(TEvent @event) where TEvent : IEvent
         {
+            @event.AggregateType = GetType();
             Apply(@event, true);
         }
 

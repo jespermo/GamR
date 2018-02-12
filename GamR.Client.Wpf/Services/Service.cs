@@ -22,9 +22,9 @@ namespace GamR.Client.Wpf.Services
             return await _requester.Get<List<Game>>($"/match/{matchId}/games");
         }
 
-        public async Task AddNewGame(Game game)
+        public async Task AddNewGame(Game game, Guid matchId)
         {
-            await _requester.Post<bool>(game, "/game");
+            await _requester.Post<bool>(game, $"/match/{matchId}/game");
             Messenger.Default.Send(new GameAdded(game));
         }
 
@@ -41,6 +41,11 @@ namespace GamR.Client.Wpf.Services
         public async Task<List<Match>> GetMatches()
         {
             return await _requester.Get<List<Match>>("/matches");
+        }
+
+        public async Task<List<Player>> GetPlayers()
+        {
+            return await _requester.Get<List<Player>>("/players");
         }
     }
 }
