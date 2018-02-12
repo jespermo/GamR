@@ -10,6 +10,15 @@ using Nancy;
 
 namespace GamR.Backend.Web.Modules
 {
+    public class Test2Module : NancyModule
+    {
+        public Test2Module(PlayersView playersView)
+        {
+            Get("/Test2", _ => Response.AsJson(playersView.Players));
+            
+        }
+    }
+
     public class GamesModule : NancyModule
     {
         public GamesModule(ViewContainer views)

@@ -7,6 +7,20 @@ using GamR.Backend.Core.Framework.Exceptions;
 
 namespace GamR.Backend.Core.Framework.Impl
 {
+    public class EventDescriptor
+    {
+        public Guid AggregateId { get; private set; }
+        public long Version { get; private set; }
+        public IEvent Data { get; private set; }
+
+        public EventDescriptor(Guid aggregateId, IEvent data, long version)
+        {
+            AggregateId = aggregateId;
+            Data = data;
+            Version = version;
+        }
+    }
+
     public class InMemoryEventStore : IEventStore
     {
         class EventDescriptor
@@ -31,7 +45,12 @@ namespace GamR.Backend.Core.Framework.Impl
             _eventPublisher = eventPublisher;
         }
 
-        public async Task Save<TEvent>(Guid aggregateId, IEnumerable<TEvent> events, long expectedVersion) where TEvent : IEvent
+        public Task Save<TEvent>(Guid aggregateId, IEnumerable<TEvent> events, long expectedVersion) where TEvent : IEvent
+        {
+            return Save(aggregateId, events.Cast<IEvent>(), expectedVersion);
+        }
+
+        public async Task Save(Guid aggregateId, IEnumerable<IEvent> events, long expectedVersion)
         {
             if (!_internalStore.TryGetValue(aggregateId, out LinkedList<EventDescriptor> existingEvents))
             {
@@ -42,7 +61,7 @@ namespace GamR.Backend.Core.Framework.Impl
             var currentVersion = existingEvents?.Last?.Value?.Version ?? 0;
 
             if (currentVersion != expectedVersion)
-                throw CreateConcurrencyException(aggregateId, events.Cast<IEvent>(), expectedVersion, currentVersion);
+                throw CreateConcurrencyException(aggregateId, events, expectedVersion, currentVersion);
 
             foreach (var @event in events)
             {
@@ -66,7 +85,7 @@ namespace GamR.Backend.Core.Framework.Impl
         private ConcurrencyException CreateConcurrencyException(Guid aggregateId, IEnumerable<IEvent> events, long expectedVersion, long currentVersion)
         {
             return new ConcurrencyException(@"Could not save events, expected version {0}, but found {1} on aggregate {2}
-Events (top 10):", expectedVersion, currentVersion, aggregateId, string.Join(Environment.NewLine, events.Select(e => $"{e.GetType().FullName}")));
+Events (top 10):", expectedVersion, currentVersion, aggregateId, string.Join(Environment.NewLine, events.Take(10).Select(e => $"{e.GetType().FullName}")));
         }
     }
 }

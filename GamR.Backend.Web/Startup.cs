@@ -1,4 +1,4 @@
-﻿using Autofac;
+﻿﻿using Autofac;
 using Autofac.Core;
 using GamR.Backend.Core.Aggregates;
 using GamR.Backend.Core.Events;
@@ -62,10 +62,11 @@ namespace GamR.Backend.Web
             eventBus.Subscribe<GameEnded>(viewContainer);
             eventBus.Subscribe<PlayerNameChanged>(viewContainer);
             existingContainer.Update(x => x.RegisterInstance(viewContainer).SingleInstance());
-            existingContainer.Update(x => x.RegisterType<CsvEventLoader>().SingleInstance());
+
+            var jsonEventStore = new JsonEventStore(new InMemoryEventStore(eventBus), "store.json");
+
             existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventSubscriber>());
             existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventPublisher>());
-            existingContainer.Update(x => x.RegisterType<InMemoryEventStore>().As<IEventStore>().SingleInstance());
             existingContainer.Update(x => x.RegisterGeneric(typeof(Repository<>)));
             
             base.ConfigureApplicationContainer(existingContainer);
@@ -85,8 +86,8 @@ namespace GamR.Backend.Web
 
         protected override void ApplicationStartup(ILifetimeScope container, IPipelines pipelines)
         {
-            container.Resolve<CsvEventLoader>().LoadEvents("whist_20170705.csv").Wait();
-            container.Resolve<CsvEventLoader>().LoadEvents("whist_20170926.csv").Wait();
+//            container.Resolve<CsvEventLoader>().LoadEvents("whist_20170705.csv").Wait();
+//            container.Resolve<CsvEventLoader>().LoadEvents("whist_20170926.csv").Wait();
 
             base.ApplicationStartup(container, pipelines);
         }
