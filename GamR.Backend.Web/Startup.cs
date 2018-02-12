@@ -1,9 +1,8 @@
 ﻿﻿using Autofac;
-using Autofac.Core;
-using GamR.Backend.Core.Aggregates;
-using GamR.Backend.Core.Events;
+using Events = GamR.Backend.Core.Events;
 using GamR.Backend.Core.Framework;
 using GamR.Backend.Core.Framework.Impl;
+using GamR.Backend.Web.ApiModels;
 using GamR.Backend.Web.Views;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -55,20 +54,22 @@ namespace GamR.Backend.Web
 
             var viewContainer = new ViewContainer();
             
-            eventBus.Subscribe<PlayerCreated>(viewContainer);
-            eventBus.Subscribe<MatchCreated>(viewContainer);
-            eventBus.Subscribe<GameStarted>(viewContainer);
-            eventBus.Subscribe<Melded>(viewContainer);
-            eventBus.Subscribe<GameEnded>(viewContainer);
-            eventBus.Subscribe<PlayerNameChanged>(viewContainer);
+            eventBus.Subscribe<Events.PlayerCreated>(viewContainer);
+            eventBus.Subscribe<Events.MatchCreated>(viewContainer);
+            eventBus.Subscribe<Events.GameStarted>(viewContainer);
+            eventBus.Subscribe<Events.Melded>(viewContainer);
+            eventBus.Subscribe<Events.GameEnded>(viewContainer);
+            eventBus.Subscribe<Events.PlayerNameChanged>(viewContainer);
             existingContainer.Update(x => x.RegisterInstance(viewContainer).SingleInstance());
 
             var jsonEventStore = new JsonEventStore(new InMemoryEventStore(eventBus), "store.json");
-
+            existingContainer.Update(x => x.RegisterInstance<IEventStore>(jsonEventStore));
             existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventSubscriber>());
             existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventPublisher>());
             existingContainer.Update(x => x.RegisterGeneric(typeof(Repository<>)));
-            
+            existingContainer.Update(x => x.RegisterType<CsvEventLoader>());
+
+
             base.ConfigureApplicationContainer(existingContainer);
         }
 
@@ -86,8 +87,9 @@ namespace GamR.Backend.Web
 
         protected override void ApplicationStartup(ILifetimeScope container, IPipelines pipelines)
         {
-//            container.Resolve<CsvEventLoader>().LoadEvents("whist_20170705.csv").Wait();
-//            container.Resolve<CsvEventLoader>().LoadEvents("whist_20170926.csv").Wait();
+            var csvEventLoader = container.Resolve<CsvEventLoader>();
+            //csvEventLoader.LoadEvents("whist_20170705.csv").Wait();
+            //csvEventLoader.LoadEvents("whist_20170926.csv").Wait();
 
             base.ApplicationStartup(container, pipelines);
         }

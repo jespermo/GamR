@@ -29,7 +29,7 @@ namespace GamR.Backend.Core.Framework.Impl
             {
                 await StoreInteraction(async () =>
                 {
-                    var events = File.ReadLines(eventStoreFileName).Select(JsonConvert.DeserializeObject<EventDescriptor>);
+                    var events = File.ReadLines(eventStoreFileName).Select(x=> JsonConvert.DeserializeObject<EventDescriptor>(x, new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All}));
 
                     foreach (var eventDescriptor in events.GroupBy(x => x.AggregateId))
                     {
