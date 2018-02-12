@@ -51,9 +51,10 @@ namespace GamR.Parser
             {
                 var aggregateGame = Backend.Core.Aggregates.Game.StartNewGame(Guid.NewGuid(), aggregateMatch.Id, playerAggregateIds.Values);
                 var gameMelding = game.Melding;
-                var playerAggregateId = playerAggregateIds.Where(x=>x.Key == gameMelding.Melder)
+                var filteredPlayerIds = playerAggregateIds.Where(x=>x.Key == gameMelding.Melder)
                     .Select(x=>x.Value);
-                aggregateGame.AddMelding(gameMelding.GameMelding, playerAggregateId, gameMelding.NumberOfTricks, gameMelding.NumberOfVips);
+                var teamIds = 
+                aggregateGame.AddMelding(gameMelding.GameMelding, filteredPlayerIds,teamIds, gameMelding.NumberOfTricks, gameMelding.NumberOfVips);
                 //aggregateGame.EndGame();
                 await _gameRepository.Save(aggregateGame);
             }

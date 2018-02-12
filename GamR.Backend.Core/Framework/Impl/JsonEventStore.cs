@@ -22,13 +22,15 @@ namespace GamR.Backend.Core.Framework.Impl
             _eventStore = eventStore;
             _eventStoreFileName = eventStoreFileName;
 
-            if (!File.Exists(eventStoreFileName))
-                File.Create(eventStoreFileName);
-
+            
             Task.Run((Func<Task>) (async () =>
             {
                 await StoreInteraction(async () =>
                 {
+                    if (!File.Exists(eventStoreFileName))
+                        File.Create(eventStoreFileName).Dispose();
+
+
                     var events = File.ReadLines(eventStoreFileName).Select(x=> JsonConvert.DeserializeObject<EventDescriptor>(x, new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All}));
 
                     foreach (var eventDescriptor in events.GroupBy(x => x.AggregateId))
@@ -38,7 +40,7 @@ namespace GamR.Backend.Core.Framework.Impl
                             eventDescriptor.Max(x => x.Version));
                     }
                 });
-            }));
+            })).GetAwaiter().GetResult();
         }
         
 
@@ -78,8 +80,21 @@ namespace GamR.Backend.Core.Framework.Impl
                 var objects =
                     events.ToList().Select(x => JsonConvert.SerializeObject(new EventDescriptor(aggregateId, x, expectedVersion),
                         Formatting.None, jsonSerializerSettings));
-                File.AppendAllLines(_eventStoreFileName, objects);
+                try
+                {
+                    File.AppendAllLines(_eventStoreFileName, objects);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
             });
+        }
+
+        public Task<Dictionary<Guid, IEnumerable<IEvent>>> GetEventsByAggregateType(Type aggregateType)
+        {
+            return _eventStore.GetEventsByAggregateType(aggregateType);
         }
     }
 }

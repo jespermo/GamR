@@ -85,14 +85,29 @@ namespace GamR.Client.Wpf.ViewModels
             var game = new Game
             {
                 Melding = Melding,
-                Players = Players.Values.Cast<Player>().Select(p => new PlayerScore()).ToList(),
+                Players = Players.Values.Cast<Player>().Select(p => new PlayerScore{Id = p.Id,Name = p.Name}).ToList(),
                 MeldingPlayers = Melders.Keys.ToList(),
-                ActualNumberOfTricks = ActualTricks,
+                MeldingTeam = MeldingTeam.Values.Cast<Player>().Select(p => new PlayerScore { Id = p.Id, Name = p.Name }).ToList(),
+                TeamTricks = CreateTeamTricks(),
                 NumberOfVips = Vip,
                 NumberOfTricks = MeldingTrumps
             };
             await _service.AddNewGame(game, _matchId);
             obj?.Close();
+        }
+
+        private List<TeamTricks> CreateTeamTricks()
+        {
+            if (NormalResultVisibility == Visibility.Visible)
+            {
+                return new List<TeamTricks>{new TeamTricks{TeamId = ((Player) Melders.First().Value).Id,Result = ActualTricks}};
+            }
+            else
+            {
+                return PlayersMinimizingTricks.Select(p => new TeamTricks {TeamId = p.Id, Result = p.PlayerActualTricks})
+                    .ToList();
+
+            }
         }
 
         public Dictionary<string, object> Melders
@@ -128,7 +143,7 @@ namespace GamR.Client.Wpf.ViewModels
             if (Melding?.EndsWith("SOL") == true)
             {
                 SetMinimizingPlayersVisibility(true);
-                Melders.Values.Cast<Player>().ToList().ForEach(p => PlayersMinimizingTricks.Add(new SolPlayerViewModel{Name = p.Name}));
+                Melders.Values.Cast<Player>().ToList().ForEach(p => PlayersMinimizingTricks.Add(new SolPlayerViewModel{Name = p.Name,Id = p.Id}));
                 return;
             }
             SetMinimizingPlayersVisibility(false);
@@ -223,5 +238,7 @@ namespace GamR.Client.Wpf.ViewModels
             get { return _playerActualTricks; }
             set { Set(ref _playerActualTricks, value); }
         }
+
+        public Guid Id { get; set; }
     }
 }

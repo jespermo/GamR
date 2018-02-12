@@ -16,6 +16,9 @@ namespace GamR.Backend.Web.Views.ViewTypes
         {
             Id = id;
             Players = players;
+            TeamTricks = new Dictionary<Guid, int>();
+            Players = new List<Guid>();
+            MeldingPlayers = new List<Guid>();
         }
 
         public void AddMelding(string melding, IEnumerable<Guid> meldingPlayers, int numberOfTricks, string numberOfVips)
@@ -27,16 +30,20 @@ namespace GamR.Backend.Web.Views.ViewTypes
         }
 
 
-        public void EndGame(int actualNumberOfTricks, decimal player1Score, decimal player2Score, decimal player3Score, decimal player4Score)
+        public void EndGame(Dictionary<Guid, int> teamTricks, decimal player1Score, decimal player2Score, decimal player3Score, decimal player4Score)
         {
-            ActualNumberOfTricks = actualNumberOfTricks;
+            if (teamTricks == null)
+            {
+                
+            }
+            TeamTricks = teamTricks;
             Player1Score = player1Score;
             Player2Score = player2Score;
             Player3Score = player3Score;
             Player4Score = player4Score;
         }
 
-        public int ActualNumberOfTricks { get; private set; }
+        public Dictionary<Guid, int> TeamTricks { get; private set; }
 
         public decimal Player4Score { get; private set; }
 

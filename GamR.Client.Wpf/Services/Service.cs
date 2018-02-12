@@ -24,8 +24,8 @@ namespace GamR.Client.Wpf.Services
 
         public async Task AddNewGame(Game game, Guid matchId)
         {
-            await _requester.Post<bool>(game, $"/match/{matchId}/game");
-            Messenger.Default.Send(new GameAdded(game));
+            await _requester.Post<Guid>(game, $"/match/{matchId}/game");
+            Messenger.Default.Send(new GameAdded(matchId));
         }
 
         public async Task<MatchStatus> GetStatusses(Guid matchId)

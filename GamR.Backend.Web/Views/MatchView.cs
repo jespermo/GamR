@@ -50,7 +50,7 @@ namespace GamR.Backend.Web.Views
             decimal player2Score = args.Result.Values.ToList()[1];
             decimal player3Score = args.Result.Values.ToList()[2];
             decimal player4Score = args.Result.Values.ToList()[3];
-            Games[args.GameId].EndGame(args.ActualNumberOfTricks,player1Score, player2Score, player3Score, player4Score);
+            Games[args.GameId].EndGame(args.TeamTricks,player1Score, player2Score, player3Score, player4Score);
             return Task.CompletedTask;
         }
     }

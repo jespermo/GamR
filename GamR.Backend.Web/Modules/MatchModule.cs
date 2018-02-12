@@ -5,6 +5,7 @@ using GamR.Backend.Core.Framework;
 using GamR.Backend.Web.ApiModels;
 using GamR.Backend.Web.Views;
 using GamR.Backend.Web.Views.ViewTypes;
+using Microsoft.AspNetCore.Mvc;
 using Nancy;
 using Nancy.ModelBinding;
 
@@ -14,11 +15,13 @@ namespace GamR.Backend.Web.Modules
     {
         private readonly Repository<Core.Aggregates.Match> _matchRepository;
         private readonly ViewContainer _views;
+        private readonly Repository<Core.Aggregates.Game> _gameRepository;
 
-        public MatchModule(Repository<Core.Aggregates.Match> matchRepository, ViewContainer views)
+        public MatchModule(Repository<Core.Aggregates.Match> matchRepository, ViewContainer views, Repository<Core.Aggregates.Game> gameRepository)
         {
             _matchRepository = matchRepository;
             _views = views;
+            _gameRepository = gameRepository;
             Get("/matches", args =>
             {
                 var matches = _views.MatchesView.Matches.Select(kvp =>
@@ -29,7 +32,7 @@ namespace GamR.Backend.Web.Modules
                 return response;
             });
 
-            Post("/match/{matchId}/game", args =>
+            Post("/match/{matchId}/game", async args =>
             {
                 if (!Guid.TryParse(args.matchId, out Guid matchId))
                 {
@@ -38,11 +41,14 @@ namespace GamR.Backend.Web.Modules
                 var newGame = this.Bind<Game>();
                 var players = newGame.Players;
                 Core.Aggregates.Game game = Core.Aggregates.Game.StartNewGame(Guid.NewGuid(),matchId, players.Select(p => p.Id));
-                game.AddMelding(newGame.Melding, players.Where(p => newGame.MeldingPlayers.Any(mp => mp == p.Name)).Select(x => x.Id),
+                var meldingPlayerIds = players.Where(p => newGame.MeldingPlayers.Any(mp => mp == p.Name)).Select(x => x.Id);
+                var meldingTeamPlayerIds = newGame.MeldingTeam.Select(x=>x.Id);
+                game.AddMelding(newGame.Melding, meldingPlayerIds, meldingTeamPlayerIds,
                     newGame.NumberOfTricks,newGame.NumberOfVips);
                 
-                game.EndGame(newGame.ActualNumberOfTricks);
-                return Response.AsJson("");
+                game.EndGame(newGame.TeamTricks.ToDictionary(x => x.TeamId, y => y.Result));
+                await _gameRepository.Save(game);
+                return Response.AsJson(game.Id);
             });
 
             Get("/match/{matchId}/games", args =>
@@ -61,7 +67,7 @@ namespace GamR.Backend.Web.Modules
                         Melding = g.Value.Melding,
                         NumberOfTricks = g.Value.NumberOfTricks,
                         NumberOfVips = g.Value.NumberOfVips,
-                        ActualNumberOfTricks = g.Value.ActualNumberOfTricks,
+                        TeamTricks = g.Value.TeamTricks.Select(tt =>new TeamTricks{TeamId = tt.Key, Result = tt.Value}).ToList(),
                         Players = CreateScore(g.Value,players)                        }
                 ).ToList());
                 response.Headers.Add("Content-Type", "application/json");
@@ -77,7 +83,14 @@ namespace GamR.Backend.Web.Modules
 
                 var match = _views.MatchViews[matchId];
                 var players = _views.PlayersView.Players;
-                var playerGuids = match.Games.Values.First().Players.ToList();
+                var playerGuids = match.Games.Values.FirstOrDefault(x => x.Players?.Count == 4)?.Players?.ToList() ?? new List<Guid>
+                {
+                    _views.PlayersView.Players.Keys.ToList()[0],
+                    _views.PlayersView.Players.Keys.ToList()[1],
+                    _views.PlayersView.Players.Keys.ToList()[2],
+                    _views.PlayersView.Players.Keys.ToList()[3],
+
+                };
                 var p1Score = new PlayerScore
                 {
                     Score = match.Games.Sum(g => g.Value.Player1Score),
@@ -135,16 +148,16 @@ namespace GamR.Backend.Web.Modules
             });
             playerScores.Add(new PlayerScore
             {
-                Id = playerGuids[1], Name = players[playerGuids[1]], Score = match.Player1Score
+                Id = playerGuids[1], Name = players[playerGuids[1]], Score = match.Player2Score
             });
             playerScores.Add(new PlayerScore
             {
-                Id = playerGuids[2], Name = players[playerGuids[2]], Score = match.Player1Score
+                Id = playerGuids[2], Name = players[playerGuids[2]], Score = match.Player3Score
             });
             playerScores.Add(
                 new PlayerScore
                 {
-                    Id = playerGuids[3], Name = players[playerGuids[3]], Score = match.Player1Score
+                    Id = playerGuids[3], Name = players[playerGuids[3]], Score = match.Player4Score
                 });
             return playerScores;
         }
@@ -162,10 +175,17 @@ namespace GamR.Backend.Web.Modules
         public string Melding { get; set; }
         public int NumberOfTricks { get; set; }
         public string NumberOfVips { get; set; }
-        public int ActualNumberOfTricks { get; set; }
+        public List<TeamTricks> TeamTricks { get; set; }
+
+        public List<PlayerScore> MeldingTeam { get; set; }
 
         public List<PlayerScore> Players {get; set; }
+    }
 
+    public class TeamTricks
+    {
+        public Guid TeamId { get; set; }
+        public int Result { get; set; }
     }
 
     public class PlayerScore

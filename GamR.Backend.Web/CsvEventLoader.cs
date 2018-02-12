@@ -86,7 +86,8 @@ namespace GamR.Backend.Web
                 .Select(player => player.Id);
 
             var melding = row[MeldingIndex];
-            game.AddMelding(melding, meldingPlayerIds, row[NumberOfTricksIndex].ValueOrZero(), row[NumberOfVipsIndex]);
+            IEnumerable<Guid> meldingTeamIds = new List<Guid>();
+            game.AddMelding(melding, meldingPlayerIds,meldingTeamIds, row[NumberOfTricksIndex].ValueOrZero(), row[NumberOfVipsIndex]);
             
             game.EndGame(decimal.Parse(row[PlayerOneScoreIndex]), decimal.Parse(row[PlayerTwoScoreIndex]), decimal.Parse(row[PlayerThreeScoreIndex]), decimal.Parse(row[PlayerFourScoreIndex]), row[ActualTricksIndex].ValueOrZero());
             return game;

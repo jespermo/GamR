@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
@@ -20,7 +18,13 @@ namespace GamR.Client.Wpf.ViewModels
         public GamesViewModel(IService service)
         {
             _service = service;
-            Messenger.Default.Register<GameAdded>(this, AddGame);
+            Messenger.Default.Register<GameAdded>(this, x =>
+            {
+                Task.Run(async () =>
+                {
+                    await UpdateGamesCollection(x.MatchId);
+                });
+            });
 
             MessengerInstance.Register<PropertyChangedMessage<Match>>(this, m =>
             {
@@ -46,12 +50,7 @@ namespace GamR.Client.Wpf.ViewModels
             var games = await _service.GetGames(matchId);
             Games = new ObservableCollection<Game>(games);
         }
-
-        private void AddGame(GameAdded obj)
-        {
-            //_games.Add(obj.Game);
-        }
-
+        
         public ObservableCollection<Game> Games
         {
             get { return _games; }

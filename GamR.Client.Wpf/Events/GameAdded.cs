@@ -1,14 +1,15 @@
-﻿using GamR.Client.Wpf.Models;
+﻿using System;
+using GamR.Client.Wpf.Models;
 
 namespace GamR.Client.Wpf.Events
 {
     public class GameAdded
     {
-        public Game Game { get; }
+        public Guid MatchId { get; }
 
-        public GameAdded(Game game)
+        public GameAdded(Guid matchId)
         {
-            Game = game;
+            MatchId = matchId;
         }
     }
 }
