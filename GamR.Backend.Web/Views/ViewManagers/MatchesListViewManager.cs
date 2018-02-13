@@ -9,6 +9,7 @@ using GamR.Backend.Web.Views.ViewTypes;
 
 namespace GamR.Backend.Web.Views.ViewManagers
 {
+
     public class MatchesListViewManager 
         : ListViewManager<MatchOverview>, 
         IViewManager,

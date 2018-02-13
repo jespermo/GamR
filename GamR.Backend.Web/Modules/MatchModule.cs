@@ -6,7 +6,6 @@ using GamR.Backend.Web.ApiModels;
 using GamR.Backend.Web.Views;
 using GamR.Backend.Web.Views.ViewManagers;
 using GamR.Backend.Web.Views.ViewTypes;
-using Microsoft.AspNetCore.Mvc;
 using Nancy;
 using Nancy.ModelBinding;
 
@@ -21,6 +20,7 @@ namespace GamR.Backend.Web.Modules
             Repository<Core.Aggregates.Match> matchRepository,
             MatchGamesViewManger matchGamesViewManager,
             MatchesListViewManager matchesListViewManager,
+            MatchPlayerStatusViewManager matchplayerStatusViewManager,
             PlayersViewManager playersViewManager,
             Repository<Core.Aggregates.Game> gameRepository)
         {
@@ -85,49 +85,12 @@ namespace GamR.Backend.Web.Modules
                 {
                     return HttpStatusCode.NotFound;
                 }
-
-                var games = matchGamesViewManager.GetById(matchId);
-                var players = playersViewManager.Players;
-                var playerGuids = games.FirstOrDefault(x => x.Players?.Count == 4)?.Players?.ToList() ?? new List<Guid>
-                {
-                    players.Keys.ToList()[0],
-                    players.Keys.ToList()[1],
-                    players.Keys.ToList()[2],
-                    players.Keys.ToList()[3],
-
-                };
-                var p1Score = new PlayerScore
-                {
-                    Score = games.Sum(g => g.Player1Score),
-                    Name = players[playerGuids[0]]
-                };
-                var p2Score = new PlayerScore
-                {
-                    Score = games.Sum(g => g.Player2Score),
-                    Name = players[playerGuids[1]]
-                };
-
-                var p3Score = new PlayerScore
-                {
-                    Score = games.Sum(g => g.Player3Score),
-                    Name = players[playerGuids[2]]
-                };
-
-                var p4Score = new PlayerScore
-                {
-                    Score = games.Sum(g => g.Player4Score),
-                    Name = players[playerGuids[3]]
-                };
                 var response = Response.AsJson(
                     new MatchStatus
                     {
-                        PlayerStatus = new List<PlayerScore>
-                        {
-                            p1Score,
-                            p2Score,
-                            p3Score,
-                            p4Score
-                        }
+                        PlayerStatus = new List<PlayerScore>(matchplayerStatusViewManager.GetPlayerStatusses(matchId)
+                        .Select(ps => new PlayerScore{Name = ps.Name, Score = ps.Score}))
+                        .ToList()
                     }
                 );
                 response.Headers.Add("Content-Type", "application/json");

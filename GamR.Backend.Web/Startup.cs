@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Diagnostics.Tracing;
-using System.Reflection;
 using System.Threading.Tasks;
 using Autofac;
-using GamR.Backend.Core.Aggregates;
-using Events = GamR.Backend.Core.Events;
 using GamR.Backend.Core.Framework;
 using GamR.Backend.Core.Framework.Impl;
-using GamR.Backend.Web.ApiModels;
 using GamR.Backend.Web.Views;
 using GamR.Backend.Web.Views.ViewManagers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -20,7 +14,6 @@ using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.Bootstrappers.Autofac;
 using Nancy.Owin;
-using Module = Autofac.Module;
 
 namespace GamR.Backend.Web
 {
@@ -77,8 +70,7 @@ namespace GamR.Backend.Web
         protected override void ConfigureApplicationContainer(ILifetimeScope existingContainer)
         {
             var eventBus = new InMemoryBus();
-            var jsonEventStore = new JsonEventStore(new InMemoryEventStore(eventBus), "store.json");
-            existingContainer.Update(x => x.RegisterInstance<IEventStore>(jsonEventStore));
+
             existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventSubscriber>());
             existingContainer.Update(x => x.RegisterInstance(eventBus).As<IEventPublisher>());
             existingContainer.Update(x => x.RegisterGeneric(typeof(Repository<>)));
@@ -88,15 +80,19 @@ namespace GamR.Backend.Web
             var matchesView = new MatchesListViewManager();
             var gameMatchesViewManager = new MatchGamesViewManger();
             var playersViewManager = new PlayersViewManager();
-            
+            var playerStatusViewManager = new MatchPlayerStatusViewManager();
+
             Task.WaitAll(gameMatchesViewManager.SubscribeAll(eventBus), 
                          matchesView.SubscribeAll(eventBus),
+                         playerStatusViewManager.SubscribeAll(eventBus),
                          playersViewManager.SubscribeAll(eventBus));
 
             existingContainer.Update(x => x.RegisterInstance(matchesView).SingleInstance());
             existingContainer.Update(x => x.RegisterInstance(gameMatchesViewManager).SingleInstance());
             existingContainer.Update(x => x.RegisterInstance(playersViewManager).SingleInstance());
-            
+            existingContainer.Update(x => x.RegisterInstance(playerStatusViewManager).SingleInstance());
+            var jsonEventStore = new JsonEventStore(new InMemoryEventStore(eventBus), "store.json");
+            existingContainer.Update(x => x.RegisterInstance<IEventStore>(jsonEventStore));
             base.ConfigureApplicationContainer(existingContainer);
         }
 
