@@ -13,9 +13,6 @@ namespace GamR.Backend.Web.Modules
 {
     public class MatchModule : NancyModule
     {
-        private readonly Repository<Core.Aggregates.Match> _matchRepository;
-        private readonly Repository<Core.Aggregates.Game> _gameRepository;
-
         public MatchModule(
             Repository<Core.Aggregates.Match> matchRepository,
             MatchGamesViewManger matchGamesViewManager,
@@ -24,8 +21,6 @@ namespace GamR.Backend.Web.Modules
             PlayersViewManager playersViewManager,
             Repository<Core.Aggregates.Game> gameRepository)
         {
-            _matchRepository = matchRepository;
-            _gameRepository = gameRepository;
             Get("/matches", args =>
             {
                 var matches = matchesListViewManager.All().Select(match =>
@@ -51,7 +46,7 @@ namespace GamR.Backend.Web.Modules
                     newGame.NumberOfTricks, newGame.NumberOfVips);
 
                 game.EndGame(newGame.TeamTricks.ToDictionary(x => x.TeamId, y => y.Result));
-                await _gameRepository.Save(game);
+                await gameRepository.Save(game);
                 return Response.AsJson(game.Id);
             });
 
@@ -101,7 +96,7 @@ namespace GamR.Backend.Web.Modules
             {
                 var newMatch = this.Bind<NewMatch>();
                 var match = Core.Aggregates.Match.Create(Guid.NewGuid(), newMatch.Date, newMatch.Location);
-                await _matchRepository.Save(match);
+                await matchRepository.Save(match);
                 return Response.AsJson(match.Id);
             });
         }
@@ -140,34 +135,5 @@ namespace GamR.Backend.Web.Modules
 
     }
 
-    public class MatchStatus
-    {
-        public List<PlayerScore> PlayerStatus { get; set; }
-    }
-
-    public class Game
-    {
-        public List<string> MeldingPlayers { get; set; }
-        public string Melding { get; set; }
-        public int NumberOfTricks { get; set; }
-        public string NumberOfVips { get; set; }
-        public List<TeamTricks> TeamTricks { get; set; }
-
-        public List<PlayerScore> MeldingTeam { get; set; }
-
-        public List<PlayerScore> Players { get; set; }
-    }
-
-    public class TeamTricks
-    {
-        public Guid TeamId { get; set; }
-        public int Result { get; set; }
-    }
-
-    public class PlayerScore
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public decimal Score { get; set; }
-    }
+   
 }

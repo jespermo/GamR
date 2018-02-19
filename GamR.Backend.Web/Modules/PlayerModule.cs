@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using GamR.Backend.Web.Views;
 using Nancy;
-using Nancy.ModelBinding;
 
 namespace GamR.Backend.Web.Modules
 {
     public class PlayerModule : NancyModule
     {
 
-        private static List<Player> _players;
 
         public PlayerModule(PlayersViewManager playersViewManager)
         {
