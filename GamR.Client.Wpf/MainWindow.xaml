@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:GamR.Client.Wpf.Views"
         mc:Ignorable="d"
-        Title="{Binding Title}" Height="350" Width="525">
+        Title="{Binding Title}" Height="450" Width="1050">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="180"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Text}"/>
@@ -27,8 +27,8 @@
                   SelectedItem="{Binding SelectedMatch}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Date" Width="40" DisplayMemberBinding="{Binding Date}" />
-                    <GridViewColumn Header="Location" Width="55" DisplayMemberBinding="{Binding Location}" />
+                    <GridViewColumn Header="Date" Width="90" DisplayMemberBinding="{Binding Date, StringFormat='{}{0:dd/MM/yyyy}'}" />
+                    <GridViewColumn Header="Location" Width="90" DisplayMemberBinding="{Binding Location}" />
                 </GridView>
             </ListView.View>
         </ListView>
